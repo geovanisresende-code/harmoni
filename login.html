@@ -20,6 +20,22 @@ body {
   padding: 20px;
 }
 
+@media (max-width: 480px) {
+  body {
+    align-items: flex-start;
+    padding: 24px 0 40px;
+    background-attachment: scroll; /* iOS fix */
+  }
+
+  .login-wrap {
+    padding: 16px;
+  }
+
+  .login-box {
+    padding: 32px 22px 28px;
+  }
+}
+
 .login-box {
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(20px);

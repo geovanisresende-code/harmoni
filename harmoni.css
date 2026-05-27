@@ -434,3 +434,140 @@ tbody tr:last-child td { border-bottom: none; }
 .menu-rh a.active::after,
 .menu-rh a:hover::after { background: linear-gradient(90deg, #ff7a18, #ffb347); }
 .menu-rh a:hover { color: #ffb347; }
+
+/* =====================================================
+   HAMBURGUER
+   ===================================================== */
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 6px;
+  background: none;
+  border: none;
+  z-index: 1100;
+}
+
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* =====================================================
+   RESPONSIVO — TABLET (≤ 900px)
+   ===================================================== */
+
+@media (max-width: 900px) {
+
+  /* Topbar */
+  .topbar {
+    top: 12px;
+    width: 94%;
+    height: 64px;
+    padding: 0 20px;
+    border-radius: 16px;
+  }
+
+  /* Menu mobile — dropdown */
+  .hamburger { display: flex; }
+
+  .menu {
+    display: none;
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
+    background: rgba(20, 10, 35, 0.96);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px;
+    flex-direction: column;
+    gap: 0;
+    padding: 12px 0;
+    z-index: 999;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .menu.open { display: flex; }
+
+  .menu a {
+    padding: 14px 24px;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .menu a:last-child { border-bottom: none; }
+
+  .menu a::after { display: none; }
+
+  /* Container */
+  .container { padding: 100px 16px 40px; }
+
+  /* Grids */
+  .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid-2 { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Títulos */
+  .page-title { font-size: 22px; }
+  .card-value  { font-size: 28px; }
+
+  /* Tabela — scroll horizontal */
+  .table-wrap { overflow-x: auto; }
+  table { min-width: 560px; }
+
+  /* Seção header */
+  .section-header { flex-wrap: wrap; gap: 10px; }
+}
+
+/* =====================================================
+   RESPONSIVO — MOBILE (≤ 540px)
+   ===================================================== */
+
+@media (max-width: 540px) {
+
+  /* Topbar */
+  .topbar { height: 58px; padding: 0 16px; top: 10px; border-radius: 14px; }
+  .logo img { width: 80px; }
+
+  /* User badge — esconde texto longo */
+  .topbar-user span { font-size: 12px; padding: 6px 10px; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Container */
+  .container { padding: 88px 12px 40px; }
+
+  /* Grids viram 1 coluna */
+  .grid-4,
+  .grid-3 { grid-template-columns: 1fr; gap: 12px; }
+
+  /* Cards */
+  .card { padding: 20px 16px; }
+  .card-value { font-size: 24px; }
+  .page-title { font-size: 20px; margin-bottom: 20px; }
+  .section-title { font-size: 16px; }
+
+  /* Botões */
+  .btn-lg { padding: 13px 20px; font-size: 14px; }
+  .btn    { font-size: 13px; }
+
+  /* Tabela */
+  table { min-width: 480px; font-size: 12px; }
+  thead th, tbody td { padding: 10px 12px; }
+
+  /* Alertas */
+  .alert { font-size: 13px; }
+
+  /* Topbar user — esconde em telas muito pequenas */
+  .topbar-user .badge { display: none; }
+}

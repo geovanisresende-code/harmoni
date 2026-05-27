@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Histórico</title>
+<link rel="stylesheet" href="harmoni.css">
+<style>
+
+.report-card {
+  background: rgba(255,255,255,0.13);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  padding: 22px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+
+.report-left { display: flex; align-items: center; gap: 18px; }
+
+.report-icon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.report-title  { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.report-detail { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+.report-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.score-pill {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 70px;
+}
+
+.score-pill .val { font-size: 18px; font-weight: 700; color: #fff; }
+.score-pill .lbl { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><img src="assets/logo.png" alt="Harmoni"></div>
+  <div class="menu">
+    <a href="index.html">Dashboard</a>
+    <a href="chat.html">Nova Análise</a>
+    <a href="indicadores.html">Indicadores</a>
+    <a href="historico.html" class="active">Relatórios</a>
+  </div>
+  <div class="topbar-user"><span>Olá, <span data-user-name>Colaborador</span></span></div>
+</div>
+
+<div class="container">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="page-title" style="margin-bottom:4px">Seus Relatórios</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)">3 sessões realizadas</div>
+    </div>
+    <button class="btn btn-primary" onclick="location.href='chat.html'">+ Nova Análise</button>
+  </div>
+
+  <!-- Relatório 1 -->
+  <div class="report-card">
+    <div class="report-left">
+      <div class="report-icon" style="background:rgba(46,204,113,0.2)">📄</div>
+      <div>
+        <div class="report-title">Relatório — 05 de Março de 2026</div>
+        <div class="report-detail">Duração: 45 min · Status: <span style="color:#2ecc71">Saudável</span></div>
+      </div>
+    </div>
+    <div class="report-right">
+      <div class="score-pill">
+        <div class="val" style="color:#2ecc71">74%</div>
+        <div class="lbl">Índice</div>
+      </div>
+      <span class="badge badge-green">Baixo risco</span>
+      <button class="btn btn-secondary btn-sm">⬇ PDF</button>
+      <button class="btn btn-primary btn-sm" onclick="location.href='relatorio.html'">Visualizar</button>
+    </div>
+  </div>
+
+  <!-- Relatório 2 -->
+  <div class="report-card">
+    <div class="report-left">
+      <div class="report-icon" style="background:rgba(241,196,15,0.2)">📄</div>
+      <div>
+        <div class="report-title">Relatório — 20 de Fevereiro de 2026</div>
+        <div class="report-detail">Duração: 38 min · Status: <span style="color:#f1c40f">Moderado</span></div>
+      </div>
+    </div>
+    <div class="report-right">
+      <div class="score-pill">
+        <div class="val" style="color:#f1c40f">69%</div>
+        <div class="lbl">Índice</div>
+      </div>
+      <span class="badge badge-yellow">Moderado</span>
+      <button class="btn btn-secondary btn-sm">⬇ PDF</button>
+      <button class="btn btn-primary btn-sm">Visualizar</button>
+    </div>
+  </div>
+
+  <!-- Relatório 3 -->
+  <div class="report-card">
+    <div class="report-left">
+      <div class="report-icon" style="background:rgba(43,176,230,0.2)">📄</div>
+      <div>
+        <div class="report-title">Relatório — 10 de Janeiro de 2026</div>
+        <div class="report-detail">Duração: 52 min · Status: <span style="color:#2ecc71">Muito Saudável</span></div>
+      </div>
+    </div>
+    <div class="report-right">
+      <div class="score-pill">
+        <div class="val" style="color:#2ecc71">82%</div>
+        <div class="lbl">Índice</div>
+      </div>
+      <span class="badge badge-green">Muito baixo</span>
+      <button class="btn btn-secondary btn-sm">⬇ PDF</button>
+      <button class="btn btn-primary btn-sm">Visualizar</button>
+    </div>
+  </div>
+
+  <div class="footer">Harmoni © 2026</div>
+</div>
+
+<script src="auth.js"></script>
+<script>HarmoniAuth.requireAuth(); HarmoniAuth.fillUserName();</script>
+</body>
+</html>

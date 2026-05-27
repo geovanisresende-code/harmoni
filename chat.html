@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Nova Análise</title>
+<link rel="stylesheet" href="harmoni.css">
+<style>
+
+.chat-container {
+  padding: 110px 25px 110px;
+  max-width: 860px;
+  margin: auto;
+}
+
+.chat-header {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ai-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6f91, #ff9472);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.ai-status { flex: 1; }
+.ai-name   { font-size: 14px; font-weight: 600; color: #fff; }
+.ai-online { font-size: 12px; color: #2ecc71; }
+
+.chat-box {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 24px;
+  min-height: 420px;
+  max-height: 55vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.message {
+  max-width: 78%;
+  padding: 13px 17px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.user-msg {
+  background: linear-gradient(135deg, #ff7a18, #ffb347);
+  color: #fff;
+  margin-left: auto;
+  border-bottom-right-radius: 5px;
+}
+
+.bot-msg {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border-bottom-left-radius: 5px;
+}
+
+.bot-msg .bot-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.typing {
+  display: flex;
+  gap: 5px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  width: fit-content;
+}
+
+.typing span {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: blink 1.2s infinite;
+}
+
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%,80%,100% { opacity: 0.3; }
+  40%         { opacity: 1; }
+}
+
+/* Input area */
+.input-area {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 860px;
+  padding: 16px 0 24px;
+  background: transparent;
+}
+
+.input-box {
+  display: flex;
+  gap: 10px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 16px;
+  padding: 10px 10px 10px 18px;
+  align-items: center;
+}
+
+.input-box input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #fff;
+  padding: 4px 0;
+}
+
+.input-box input::placeholder { color: rgba(255,255,255,0.4); }
+
+.input-btns { display: flex; gap: 8px; }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><img src="assets/logo.png" alt="Harmoni"></div>
+  <div class="menu">
+    <a href="index.html">Dashboard</a>
+    <a href="chat.html" class="active">Nova Análise</a>
+    <a href="indicadores.html">Indicadores</a>
+    <a href="historico.html">Relatórios</a>
+  </div>
+  <div class="topbar-user"><span>Olá, <span data-user-name>Colaborador</span></span></div>
+</div>
+
+<div class="chat-container">
+
+  <div class="chat-header">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-status">
+      <div class="ai-name">Harmoni IA</div>
+      <div class="ai-online">● Online · Análise emocional ativa</div>
+    </div>
+    <button class="btn btn-sm btn-ghost" onclick="encerrarSessao()">Encerrar sessão</button>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    <div class="message bot-msg">
+      <div class="bot-label">Harmoni IA</div>
+      Olá, Carlos 👋 Estou aqui para te apoiar. Como você está se sentindo hoje?
+    </div>
+  </div>
+
+</div>
+
+<!-- Input -->
+<div class="input-area">
+  <div class="input-box">
+    <input type="text" id="userInput" placeholder="Escreva como você está se sentindo..." onkeydown="if(event.key==='Enter') enviar()">
+    <div class="input-btns">
+      <button class="btn btn-secondary btn-sm" onclick="enviar()">Enviar</button>
+      <button class="btn btn-accent btn-sm" onclick="gerarRelatorio()">📋 Relatório</button>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+const user = HarmoniAuth.requireAuth();
+HarmoniAuth.fillUserName();
+// Respostas simuladas da IA
+const respostas = [
+  "Obrigado por compartilhar isso, Carlos. Pode me contar um pouco mais sobre o que está causando essa sensação?",
+  "Entendo. É importante reconhecer esses sentimentos. Você tem tido tempo para descansar adequadamente?",
+  "Percebo que você está passando por um momento desafiador. Como está sendo sua rotina de trabalho ultimamente?",
+  "Isso faz sentido. Quando foi a última vez que você fez uma atividade que te trouxe prazer ou relaxamento?",
+  "Obrigado por essa transparência. Com base no que você me contou, vou registrar esses pontos no seu relatório.",
+  "Você está indo muito bem em verbalizar seus sentimentos — isso por si só já é um passo enorme. Tem mais algo que queira compartilhar?"
+];
+
+let respostaIdx = 0;
+
+function enviar() {
+  const input = document.getElementById('userInput');
+  const chatBox = document.getElementById('chatBox');
+  const texto = input.value.trim();
+
+  if (!texto) return;
+
+  // Mensagem do usuário
+  const userMsg = document.createElement('div');
+  userMsg.className = 'message user-msg';
+  userMsg.innerText = texto;
+  chatBox.appendChild(userMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  input.value = '';
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  chatBox.appendChild(typing);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  setTimeout(() => {
+    chatBox.removeChild(typing);
+    const botMsg = document.createElement('div');
+    botMsg.className = 'message bot-msg';
+    botMsg.innerHTML = `<div class="bot-label">Harmoni IA</div>${respostas[respostaIdx % respostas.length]}`;
+    chatBox.appendChild(botMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    respostaIdx++;
+  }, 1200);
+}
+
+function gerarRelatorio() {
+  const chatBox = document.getElementById('chatBox');
+  const notif = document.createElement('div');
+  notif.style.cssText = 'text-align:center;color:rgba(255,255,255,0.6);font-size:13px;padding:8px';
+  notif.innerText = '📊 Gerando relatório com base na sessão...';
+  chatBox.appendChild(notif);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  setTimeout(() => window.location.href = 'relatorio.html', 1500);
+}
+
+function encerrarSessao() {
+  if (confirm('Encerrar sessão e voltar ao dashboard?')) {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>

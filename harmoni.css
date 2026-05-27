@@ -1,0 +1,436 @@
+/* =====================================================
+   HARMONI — CSS Global Compartilhado
+   Usado em todas as telas do front-end
+   ===================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-image: url("assets/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* =====================================================
+   TOPBAR FLUTUANTE
+   ===================================================== */
+
+.topbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 1200px;
+  height: 75px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 35px;
+  z-index: 1000;
+}
+
+.logo img {
+  width: 100px;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,1))
+    drop-shadow(0 0 8px rgba(255,240,180,0.95))
+    drop-shadow(0 0 18px rgba(255,210,120,0.85))
+    drop-shadow(0 0 30px rgba(255,180,80,0.6));
+}
+
+.menu {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.menu a {
+  text-decoration: none;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  padding: 6px 0;
+  transition: color 0.25s ease;
+}
+
+.menu a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ff6f91, #ff9472);
+  transition: width 0.25s ease;
+}
+
+.menu a:hover,
+.menu a.active { color: #ff6f91; }
+
+.menu a:hover::after,
+.menu a.active::after { width: 100%; }
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-user span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  padding: 7px 16px;
+  border-radius: 25px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* =====================================================
+   CONTAINERS
+   ===================================================== */
+
+.container {
+  padding: 115px 25px 50px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-top: -24px;
+  margin-bottom: 32px;
+}
+
+/* =====================================================
+   CARDS GLASS
+   ===================================================== */
+
+.card {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  padding: 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff6f91;
+  margin-bottom: 14px;
+}
+
+.card-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.card-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+}
+
+/* =====================================================
+   GRID LAYOUTS
+   ===================================================== */
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 22px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 22px;
+}
+
+/* =====================================================
+   BOTÕES
+   ===================================================== */
+
+.btn {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #2bb0e6;
+  color: #fff;
+}
+
+.btn-accent {
+  background: linear-gradient(90deg, #ff6f91, #ff9472);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.btn-danger {
+  background: rgba(231, 76, 60, 0.8);
+  color: #fff;
+}
+
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* =====================================================
+   BADGES / STATUS
+   ===================================================== */
+
+.badge {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-green  { background: rgba(46,204,113,0.25); color: #2ecc71; border: 1px solid rgba(46,204,113,0.4); }
+.badge-yellow { background: rgba(241,196,15,0.25);  color: #f1c40f; border: 1px solid rgba(241,196,15,0.4); }
+.badge-red    { background: rgba(231,76,60,0.25);   color: #e74c3c; border: 1px solid rgba(231,76,60,0.4); }
+.badge-blue   { background: rgba(43,176,230,0.25);  color: #2bb0e6; border: 1px solid rgba(43,176,230,0.4); }
+
+/* =====================================================
+   BARRA DE PROGRESSO
+   ===================================================== */
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  transition: width 0.6s ease;
+}
+
+.progress-fill.blue   { background: linear-gradient(90deg, #2bb0e6, #74d7f7); }
+.progress-fill.pink   { background: linear-gradient(90deg, #ff6f91, #ff9472); }
+.progress-fill.green  { background: linear-gradient(90deg, #2ecc71, #a8e063); }
+
+/* =====================================================
+   INPUTS & FORMULÁRIOS
+   ===================================================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+}
+
+.form-input,
+.form-select {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input::placeholder { color: rgba(255,255,255,0.5); }
+.form-input:focus,
+.form-select:focus { border-color: #ff6f91; }
+
+.form-select option { background: #2a1a2e; color: #fff; }
+
+/* =====================================================
+   TABELA
+   ===================================================== */
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  padding: 14px 16px;
+  text-align: left;
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+tbody td {
+  padding: 14px 16px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  vertical-align: middle;
+}
+
+tbody tr:hover { background: rgba(255,255,255,0.05); }
+tbody tr:last-child td { border-bottom: none; }
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.footer {
+  margin-top: 60px;
+  padding-bottom: 30px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+}
+
+/* =====================================================
+   ALERTAS
+   ===================================================== */
+
+.alert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.alert-warning {
+  background: rgba(241,196,15,0.15);
+  border: 1px solid rgba(241,196,15,0.35);
+  color: #f1c40f;
+}
+
+.alert-danger {
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.35);
+  color: #e74c3c;
+}
+
+.alert-success {
+  background: rgba(46,204,113,0.15);
+  border: 1px solid rgba(46,204,113,0.35);
+  color: #2ecc71;
+}
+
+/* =====================================================
+   SEÇÃO COM TÍTULO
+   ===================================================== */
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* =====================================================
+   SCROLLBAR CUSTOMIZADA
+   ===================================================== */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.35); }
+
+/* =====================================================
+   TOPBAR — MENU RH (visão empresa)
+   ===================================================== */
+
+.menu-rh a { color: rgba(255,255,255,0.85); }
+.menu-rh a.active { color: #ffb347; }
+.menu-rh a.active::after,
+.menu-rh a:hover::after { background: linear-gradient(90deg, #ff7a18, #ffb347); }
+.menu-rh a:hover { color: #ffb347; }

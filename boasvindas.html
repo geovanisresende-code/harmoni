@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmoni – Consultor Emocional</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter', sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background-image: url("assets/background.png"); /* coloque o nome correto da sua imagem */
+    background-size: cover;        /* preenche toda a tela */
+    background-position: center;   /* centraliza */
+    background-repeat: no-repeat;  /* não repete */
+    background-attachment: fixed;  /* efeito mais premium */
+
+    color:white;
+    overflow:hidden;
+}
+
+
+.container{
+    width:90%;
+    max-width:1400px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:60px;
+}
+
+/* LADO ESQUERDO */
+
+.text-content{
+    flex:1;
+}
+
+.text-content h1{
+    font-size:3rem;
+    font-weight:600;
+    line-height:1.2;
+    margin-bottom:20px;
+}
+
+.text-content p{
+    font-size:1.2rem;
+    font-weight:300;
+    opacity:0.85;
+    max-width:600px;
+    margin-bottom:40px;
+}
+
+/* BOTÃO SaaS */
+
+.btn{
+    display:inline-block;
+    padding:16px 32px;
+    border-radius:40px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+    font-size:1rem;
+    transition:all 0.3s ease;
+    margin-left:100px;
+
+    /* sombra base */
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.3),
+
+        /* glow branco fino */
+        0 0 4px rgba(255,255,255,0.9),
+
+        /* amarelo claro */
+        0 0 10px rgba(255,230,170,0.8),
+
+        /* expansão quente */
+        0 0 25px rgba(255,190,100,0.6);
+}
+
+
+
+/* LADO DIREITO */
+
+.logo-content{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.logo-content img{
+    position:relative;
+    max-width:500px;
+    width:100%;
+
+    filter:
+        drop-shadow(0 0 3px rgba(255,255,240,1))   /* núcleo branco */
+        drop-shadow(0 0 8px rgba(255,240,180,0.95)) /* amarelo claro */
+        drop-shadow(0 0 18px rgba(255,210,120,0.8)) /* expansão suave */
+        drop-shadow(0 0 35px rgba(255,180,80,0.5)); /* halo externo leve */
+}
+
+
+
+
+
+.logo-content img{
+    position:relative;
+    z-index:1;
+    max-width:500px;
+    width:100%;
+}
+
+
+
+/* RESPONSIVO */
+
+@media(max-width:1024px){
+    .container{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .text-content h1{
+        font-size:2.3rem;
+    }
+
+    .text-content p{
+        margin:0 auto 30px auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ESQUERDA -->
+    <div class="text-content">
+        <h1>Transforme o equilíbrio emocional da sua equipe.</h1>
+        <p>Inteligência emocional com tecnologia avançada para prevenir exaustão e aumentar desempenho.</p>
+        
+        <!-- COLOQUE O LINK DA SUA PLATAFORMA AQUI -->
+        <a href="login.html" class="btn">Conheça a Plataforma</a>
+
+    </div>
+
+    <!-- DIREITA -->
+    <div class="logo-content">
+        <!-- Substitua pelo caminho do seu logo -->
+        <img src="assets/logo.png" alt="Harmoni Logo">
+    </div>
+
+</div>
+
+<script src="auth.js"></script>
+<script>
+  // Se já está logado, vai direto pro dashboard
+  if (HarmoniAuth.getUser()) window.location.href = 'index.html';
+</script>
+
+</body>
+</html>

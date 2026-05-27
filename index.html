@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Dashboard</title>
+<link rel="stylesheet" href="harmoni.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(255,122,24,0.2), rgba(255,111,145,0.15));
+  border: 1px solid rgba(255,122,24,0.3);
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.welcome-text h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.7); }
+
+.streak-badge {
+  background: linear-gradient(135deg, #ff7a18, #ffb347);
+  border-radius: 14px;
+  padding: 14px 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.streak-badge .num  { font-size: 28px; font-weight: 700; color: #fff; }
+.streak-badge .lbl  { font-size: 11px; color: rgba(255,255,255,0.8); }
+
+.quick-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-card {
+  background: rgba(255,255,255,0.13);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  padding: 26px 22px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+}
+
+.quick-card .icon { font-size: 28px; margin-bottom: 12px; }
+.quick-card h3    { font-size: 16px; font-weight: 600; color: #ff6f91; margin-bottom: 8px; }
+.quick-card p     { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
+
+.chart-wrap { position: relative; height: 180px; }
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Harmoni">
+  </div>
+  <div class="menu">
+    <a href="index.html" class="active">Dashboard</a>
+    <a href="chat.html">Nova Análise</a>
+    <a href="indicadores.html">Indicadores</a>
+    <a href="historico.html">Relatórios</a>
+  </div>
+  <div class="topbar-user">
+    <span>Olá, <span data-user-name>Colaborador</span></span>
+    <button class="btn btn-ghost btn-sm" onclick="HarmoniAuth.logout()">Sair</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Boas-vindas -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h2>Bom dia, <span data-user-name>Colaborador</span>! 👋</h2>
+      <p>Seu último relatório indica equilíbrio saudável. Continue assim!</p>
+    </div>
+    <div class="streak-badge">
+      <div class="num">7</div>
+      <div class="lbl">dias em sequência</div>
+    </div>
+  </div>
+
+  <!-- KPIs rápidos -->
+  <div class="grid-4" style="margin-bottom:30px">
+    <div class="card" style="text-align:center">
+      <div class="card-title">Índice Geral</div>
+      <div class="card-value" style="color:#2ecc71">74%</div>
+      <div class="card-label">↑ +7pts vs. última sessão</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">Energia</div>
+      <div class="card-value">78%</div>
+      <div class="card-label">Boa estabilidade</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">Estresse</div>
+      <div class="card-value" style="color:#f1c40f">42%</div>
+      <div class="card-label">Nível moderado</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">Risco Exaustão</div>
+      <div class="card-value" style="color:#2ecc71">35%</div>
+      <div class="card-label">Baixo risco</div>
+    </div>
+  </div>
+
+  <!-- Ações rápidas -->
+  <div class="quick-cards">
+
+    <div class="quick-card" onclick="location.href='chat.html'">
+      <div class="icon">💬</div>
+      <h3>Nova Análise</h3>
+      <p>Faça uma nova avaliação emocional e receba um relatório personalizado.</p>
+      <button class="btn btn-primary">Iniciar</button>
+    </div>
+
+    <div class="quick-card" onclick="location.href='historico.html'">
+      <div class="icon">📋</div>
+      <h3>Histórico</h3>
+      <p>Acesse relatórios anteriores e acompanhe sua evolução ao longo do tempo.</p>
+      <button class="btn btn-secondary">Visualizar</button>
+    </div>
+
+    <div class="quick-card" onclick="location.href='indicadores.html'">
+      <div class="icon">📊</div>
+      <h3>Indicadores</h3>
+      <p>Veja métricas detalhadas de energia, estresse e risco de exaustão.</p>
+      <button class="btn btn-secondary">Abrir</button>
+    </div>
+
+    <div class="quick-card" onclick="location.href='relatorio.html'">
+      <div class="icon">🎯</div>
+      <h3>Plano de Ação</h3>
+      <p>Recomendações personalizadas geradas pela IA para seu equilíbrio.</p>
+      <button class="btn btn-accent">Ver Plano</button>
+    </div>
+
+  </div>
+
+  <!-- Gráfico de evolução resumido -->
+  <div class="card">
+    <div class="section-header">
+      <div class="section-title">Sua Evolução — Últimos 6 Meses</div>
+      <a href="indicadores.html" class="btn btn-ghost btn-sm">Ver detalhes →</a>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chartEvo"></canvas>
+    </div>
+  </div>
+
+  <div class="footer">Harmoni © 2026</div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+const user = HarmoniAuth.requireAuth();
+HarmoniAuth.fillUserName();
+const ctx = document.getElementById('chartEvo').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+    datasets: [
+      {
+        label: 'Índice Geral',
+        data: [62, 68, 65, 72, 67, 74],
+        borderColor: '#ff7a18',
+        backgroundColor: 'rgba(255,122,24,0.12)',
+        tension: 0.4, fill: true,
+        pointBackgroundColor: '#ff7a18', pointRadius: 4
+      },
+      {
+        label: 'Estresse',
+        data: [55, 48, 52, 45, 50, 42],
+        borderColor: '#ff6f91',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        borderDash: [5,4],
+        pointBackgroundColor: '#ff6f91', pointRadius: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } } }
+    },
+    scales: {
+      x: { ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+      y: { min: 0, max: 100, ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

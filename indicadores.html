@@ -2,15 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Indicadores</title>
 <link rel="stylesheet" href="harmoni.css">
 <script src="menu.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-
-.chart-wrap-tall { position: relative; height: 260px; }
-.chart-wrap      { position: relative; height: 200px; }
 
 .indicator-card {
   text-align: center;
@@ -21,20 +18,21 @@
   font-size: 42px;
   font-weight: 700;
   margin-bottom: 4px;
+  color: rgba(255,255,255,0.3);
 }
 
-.trend {
-  font-size: 13px;
-  margin-top: 6px;
+.empty-chart {
+  height: 240px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  gap: 10px;
 }
 
-.trend.up   { color: #2ecc71; }
-.trend.down { color: #e74c3c; }
-.trend.same { color: rgba(255,255,255,0.5); }
+.empty-chart span { font-size: 32px; }
 
 </style>
 </head>
@@ -60,47 +58,44 @@
 
     <div class="card indicator-card">
       <div class="card-title">Energia</div>
-      <div class="indicator-value" style="color:#2ecc71">78%</div>
-      <div class="card-label">Boa estabilidade</div>
-      <div class="trend up">↑ +5pts</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill green" style="width:78%"></div></div>
+      <div class="indicator-value">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill green" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Estresse</div>
-      <div class="indicator-value" style="color:#f1c40f">42%</div>
-      <div class="card-label">Nível moderado</div>
-      <div class="trend up">↓ −8pts (melhora)</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill pink" style="width:42%"></div></div>
+      <div class="indicator-value">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill pink" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Risco de Exaustão</div>
-      <div class="indicator-value" style="color:#2ecc71">35%</div>
-      <div class="card-label">Baixo risco</div>
-      <div class="trend up">↓ −13pts (melhora)</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill blue" style="width:35%"></div></div>
+      <div class="indicator-value">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill blue" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Índice Geral</div>
-      <div class="indicator-value" style="color:#ffb347">74%</div>
-      <div class="card-label">Equilíbrio saudável</div>
-      <div class="trend up">↑ +7pts</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill" style="width:74%"></div></div>
+      <div class="indicator-value">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill" style="width:0%"></div></div>
     </div>
 
   </div>
 
-  <!-- Gráficos -->
+  <!-- Gráficos vazios -->
   <div class="grid-2" style="margin-bottom:30px">
 
     <div class="card">
       <div class="section-header">
         <div class="section-title">Evolução — 30 dias</div>
       </div>
-      <div class="chart-wrap-tall">
-        <canvas id="chart30dias"></canvas>
+      <div class="empty-chart">
+        <span>📈</span>
+        Disponível após a primeira análise
       </div>
     </div>
 
@@ -108,19 +103,22 @@
       <div class="section-header">
         <div class="section-title">Radar Emocional</div>
       </div>
-      <div class="chart-wrap-tall">
-        <canvas id="chartRadar"></canvas>
+      <div class="empty-chart">
+        <span>🎯</span>
+        Disponível após a primeira análise
       </div>
     </div>
 
   </div>
 
-  <!-- Comparativo mensal -->
   <div class="card">
     <div class="section-header">
-      <div class="section-title">Comparativo Mensal — 6 Meses</div>
+      <div class="section-title">Comparativo Mensal</div>
     </div>
-    <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
+    <div class="empty-chart">
+      <span>📊</span>
+      Disponível após a primeira análise
+    </div>
   </div>
 
   <div class="footer">Harmoni © 2026</div>
@@ -130,69 +128,6 @@
 <script>
 HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
-const opts = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } } } },
-  scales: {
-    x: { ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
-    y: { min: 0, max: 100, ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
-  }
-};
-
-// Evolução 30 dias
-new Chart(document.getElementById('chart30dias'), {
-  type: 'line',
-  data: {
-    labels: ['Sem 1','Sem 2','Sem 3','Sem 4'],
-    datasets: [
-      { label: 'Energia',    data: [70,72,75,78], borderColor: '#2ecc71', backgroundColor: 'rgba(46,204,113,0.1)', tension: 0.4, fill: true },
-      { label: 'Estresse',   data: [55,50,48,42], borderColor: '#ff6f91', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4] },
-      { label: 'Índice',     data: [65,68,70,74], borderColor: '#ffb347', backgroundColor: 'rgba(255,179,71,0.1)', tension: 0.4, fill: true }
-    ]
-  },
-  options: { ...opts }
-});
-
-// Radar
-new Chart(document.getElementById('chartRadar'), {
-  type: 'radar',
-  data: {
-    labels: ['Energia', 'Equilíbrio', 'Foco', 'Resiliência', 'Motivação', 'Bem-estar'],
-    datasets: [{
-      label: 'Atual',
-      data: [78, 74, 68, 72, 65, 80],
-      borderColor: '#ff7a18',
-      backgroundColor: 'rgba(255,122,24,0.2)',
-      pointBackgroundColor: '#ff7a18'
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } } } },
-    scales: {
-      r: {
-        ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 }, backdropColor: 'transparent' },
-        grid: { color: 'rgba(255,255,255,0.1)' },
-        pointLabels: { color: 'rgba(255,255,255,0.7)', font: { size: 11 } }
-      }
-    }
-  }
-});
-
-// Bar comparativo
-new Chart(document.getElementById('chartBar'), {
-  type: 'bar',
-  data: {
-    labels: ['Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
-    datasets: [
-      { label: 'Índice Geral', data: [62, 68, 65, 72, 67, 74], backgroundColor: 'rgba(255,179,71,0.7)', borderRadius: 6 },
-      { label: 'Estresse',     data: [55, 48, 52, 45, 50, 42], backgroundColor: 'rgba(255,111,145,0.6)', borderRadius: 6 }
-    ]
-  },
-  options: { ...opts, plugins: { ...opts.plugins } }
-});
 </script>
 </body>
 </html>

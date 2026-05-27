@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Acesso</title>
 <link rel="stylesheet" href="harmoni.css">
@@ -228,41 +229,4 @@ async function criarConta() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erro ao criar conta');
-    alert('Conta criada com sucesso! Faça login para continuar.');
-  } catch (err) {
-    // Fallback mock quando backend ainda não está no ar
-    alert('Conta criada! Faça login para continuar.');
-  }
-
-  if (btn) { btn.textContent = 'Criar Conta'; btn.disabled = false; }
-
-  // Limpa campos e volta pra aba de login
-  document.getElementById('cadastroNome').value = '';
-  document.getElementById('cadastroEmail').value = '';
-  document.getElementById('cadastroSenha').value = '';
-  switchTab('entrar');
-}
-
-async function fazerLogin() {
-  const email = document.getElementById('loginEmail').value;
-  const senha = document.getElementById('loginSenha').value;
-  if (!email || !senha) { alert('Preencha e-mail e senha.'); return; }
-
-  const btn = document.querySelector('.btn-login-submit');
-  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
-
-  try {
-    // Tenta API real
-    await HarmoniAuth.loginAPI(email, senha);
-    window.location.href = 'index.html';
-  } catch (err) {
-    // Fallback mock enquanto backend não está no ar — aceita qualquer erro
-    const nome = email.split('@')[0];
-    const nomeFmt = nome.charAt(0).toUpperCase() + nome.slice(1);
-    HarmoniAuth.login({ name: nomeFmt, email, role: 'collaborator', token: 'mock' });
-    window.location.href = 'index.html';
-  }
-}
-</script>
-</body>
-</html>
+    alert('Conta criada com sucesso! Fa

@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Acesso</title>
 <link rel="stylesheet" href="harmoni.css">
@@ -18,6 +19,22 @@ body {
   width: 100%;
   max-width: 400px;
   padding: 20px;
+}
+
+@media (max-width: 480px) {
+  body {
+    align-items: flex-start;
+    padding: 24px 0 40px;
+    background-attachment: scroll; /* iOS fix */
+  }
+
+  .login-wrap {
+    padding: 16px;
+  }
+
+  .login-box {
+    padding: 32px 22px 28px;
+  }
 }
 
 .login-box {
@@ -152,24 +169,24 @@ body {
       <div class="forgot">Esqueci minha senha</div>
       <button class="btn btn-primary btn-full btn-lg btn-login-submit" onclick="fazerLogin()">Entrar</button>
       <div class="divider">ou acesse como</div>
-      <button class="btn btn-ghost btn-full" onclick="location.href='dashboard-rh.html'">👤 Gestor de RH / Empresa</button>
+      <button class="btn btn-ghost btn-full" onclick="entrarComoRH()">👤 Gestor de RH / Empresa</button>
     </div>
 
     <!-- Cadastro -->
     <div class="form-section" id="formCadastro">
       <div class="form-group">
         <label class="form-label">Nome completo</label>
-        <input type="text" class="form-input" placeholder="Seu nome">
+        <input type="text" class="form-input" placeholder="Seu nome" id="cadastroNome">
       </div>
       <div class="form-group">
         <label class="form-label">E-mail corporativo</label>
-        <input type="email" class="form-input" placeholder="seu@empresa.com">
+        <input type="email" class="form-input" placeholder="seu@empresa.com" id="cadastroEmail">
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input type="password" class="form-input" placeholder="Mínimo 8 caracteres">
+        <input type="password" class="form-input" placeholder="Mínimo 8 caracteres" id="cadastroSenha">
       </div>
-      <button class="btn btn-primary btn-full btn-lg">Criar Conta</button>
+      <button class="btn btn-primary btn-full btn-lg btn-cadastro-submit" onclick="criarConta()">Criar Conta</button>
     </div>
 
     <div class="footer-login">Harmoni © 2026 · Dados protegidos com criptografia de ponta a ponta</div>
@@ -188,31 +205,28 @@ function switchTab(tab) {
   document.getElementById('formCadastro').classList.toggle('active', tab === 'cadastro');
 }
 
-async function fazerLogin() {
-  const email = document.getElementById('loginEmail').value;
-  const senha = document.getElementById('loginSenha').value;
-  if (!email || !senha) { alert('Preencha e-mail e senha.'); return; }
+function entrarComoRH() {
+  HarmoniAuth.login({ name: 'Empresa XYZ', email: 'rh@empresa.com', role: 'rh', token: 'mock-rh' });
+  window.location.href = 'dashboard-rh.html';
+}
 
-  const btn = document.querySelector('.btn-login-submit');
-  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+async function criarConta() {
+  const nome  = document.getElementById('cadastroNome').value.trim();
+  const email = document.getElementById('cadastroEmail').value.trim();
+  const senha = document.getElementById('cadastroSenha').value;
+
+  if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
+  if (senha.length < 8) { alert('A senha precisa ter pelo menos 8 caracteres.'); return; }
+
+  const btn = document.querySelector('.btn-cadastro-submit');
+  if (btn) { btn.textContent = 'Criando conta...'; btn.disabled = true; }
 
   try {
-    // Tenta API real
-    await HarmoniAuth.loginAPI(email, senha);
-    window.location.href = 'index.html';
-  } catch (err) {
-    // Fallback mock (remover quando backend estiver no ar)
-    if (err.message.includes('fetch') || err.message.includes('Failed')) {
-      const nome = email.split('@')[0];
-      const nomeFmt = nome.charAt(0).toUpperCase() + nome.slice(1);
-      HarmoniAuth.login({ name: nomeFmt, email, role: 'collaborator', token: 'mock' });
-      window.location.href = 'index.html';
-    } else {
-      alert(err.message);
-      if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
-    }
-  }
-}
-</script>
-</body>
-</html>
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: nome, email, password: senha })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao criar conta');
+    alert('Conta criada com sucesso! Fa

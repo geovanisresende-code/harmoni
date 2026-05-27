@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Gestão de Colaboradores</title>
 <link rel="stylesheet" href="harmoni.css">
 <script src="menu.js" defer></script>
 <style>
 
-/* ── Barra de busca + filtros ── */
 .toolbar {
   display: flex;
   gap: 12px;
@@ -48,74 +48,17 @@
   pointer-events: none;
 }
 
-/* ── Card colaborador ── */
-.collab-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.collab-card {
-  background: rgba(255,255,255,0.13);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 18px;
-  padding: 22px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.collab-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(0,0,0,0.14);
-}
-
-.collab-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.collab-avatar {
-  width: 46px; height: 46px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.collab-card-name { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-.collab-card-role { font-size: 12px; color: rgba(255,255,255,0.5); }
-.collab-card-email { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 1px; }
-
-.collab-metrics {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.metric-pill {
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  border-radius: 10px;
-  padding: 10px;
+.empty-state {
   text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.4);
 }
 
-.metric-pill .val { font-size: 18px; font-weight: 700; color: #fff; }
-.metric-pill .lbl { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state h3    { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.6); }
+.empty-state p     { font-size: 14px; margin-bottom: 24px; }
 
-.collab-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* ── Modal de convite ── */
+/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -186,7 +129,7 @@
   <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px">
     <div>
       <div class="page-title" style="margin-bottom:4px">Gestão de Colaboradores</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.6)">48 colaboradores · 42 ativos · 6 em risco</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)">Nenhum colaborador cadastrado ainda</div>
     </div>
     <button class="btn btn-primary" onclick="document.getElementById('modalConvite').classList.add('open')">
       + Convidar Colaborador
@@ -197,15 +140,15 @@
   <div class="toolbar">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Buscar por nome, time ou cargo..." oninput="filtrar()">
+      <input type="text" placeholder="Buscar por nome, time ou cargo...">
     </div>
-    <select class="form-select" id="filterStatus" onchange="filtrar()" style="width:auto;padding:11px 14px">
+    <select class="form-select" style="width:auto;padding:11px 14px">
       <option value="">Todos os status</option>
       <option value="ativo">Ativos</option>
       <option value="risco">Em risco</option>
       <option value="inativo">Inativos</option>
     </select>
-    <select class="form-select" id="filterTime" onchange="filtrar()" style="width:auto;padding:11px 14px">
+    <select class="form-select" style="width:auto;padding:11px 14px">
       <option value="">Todos os times</option>
       <option value="Engenharia">Engenharia</option>
       <option value="Vendas">Vendas</option>
@@ -215,8 +158,15 @@
     </select>
   </div>
 
-  <!-- Cards de colaboradores -->
-  <div class="collab-grid" id="collabGrid"></div>
+  <!-- Estado vazio -->
+  <div class="card">
+    <div class="empty-state">
+      <div class="icon">👥</div>
+      <h3>Nenhum colaborador ainda</h3>
+      <p>Convide colaboradores para que eles possam realizar análises emocionais e você acompanhe o bem-estar da equipe.</p>
+      <button class="btn btn-primary" onclick="document.getElementById('modalConvite').classList.add('open')">+ Convidar primeiro colaborador</button>
+    </div>
+  </div>
 
   <div class="footer">Harmoni © 2026 · Gestão de Colaboradores</div>
 </div>
@@ -230,19 +180,19 @@
 
     <div class="form-group">
       <label class="form-label">Nome completo</label>
-      <input type="text" class="form-input" placeholder="Ex: Maria Fernanda">
+      <input type="text" class="form-input" placeholder="Ex: Maria Fernanda" id="convidadoNome">
     </div>
     <div class="form-group">
       <label class="form-label">E-mail corporativo</label>
-      <input type="email" class="form-input" placeholder="maria@empresa.com">
+      <input type="email" class="form-input" placeholder="maria@empresa.com" id="convidadoEmail">
     </div>
     <div class="form-group">
       <label class="form-label">Cargo</label>
-      <input type="text" class="form-input" placeholder="Ex: Analista de Dados">
+      <input type="text" class="form-input" placeholder="Ex: Analista de Dados" id="convidadoCargo">
     </div>
     <div class="form-group">
       <label class="form-label">Time</label>
-      <select class="form-select">
+      <select class="form-select" id="convidadoTime">
         <option>Engenharia</option>
         <option>Vendas</option>
         <option>Suporte</option>
@@ -259,91 +209,20 @@
   </div>
 </div>
 
+<script src="auth.js"></script>
 <script>
-const colaboradores = [
-  { nome:"Ana Lima", cargo:"Dev Senior", email:"ana@empresa.com", time:"Engenharia", indice:42, risco:"Alto", status:"risco", cor:"linear-gradient(135deg,#ff6f91,#ff9472)", ini:"AL", ultima:"25/05/2026" },
-  { nome:"Roberto Souza", cargo:"SDR", email:"roberto@empresa.com", time:"Vendas", indice:51, risco:"Alto", status:"risco", cor:"linear-gradient(135deg,#2bb0e6,#74d7f7)", ini:"RS", ultima:"24/05/2026" },
-  { nome:"Juliana Matos", cargo:"CS", email:"juliana@empresa.com", time:"Suporte", indice:55, risco:"Moderado", status:"risco", cor:"linear-gradient(135deg,#ff7a18,#ffb347)", ini:"JM", ultima:"22/05/2026" },
-  { nome:"Carlos Andrade", cargo:"Dev Pleno", email:"carlos@empresa.com", time:"Engenharia", indice:74, risco:"Baixo", status:"ativo", cor:"linear-gradient(135deg,#2ecc71,#a8e063)", ini:"CA", ultima:"20/05/2026" },
-  { nome:"Fernanda Silva", cargo:"UX Designer", email:"fernanda@empresa.com", time:"Design", indice:82, risco:"Baixo", status:"ativo", cor:"linear-gradient(135deg,#9b59b6,#d7b8f3)", ini:"FS", ultima:"19/05/2026" },
-  { nome:"Thiago Rocha", cargo:"Product Manager", email:"thiago@empresa.com", time:"Produto", indice:78, risco:"Baixo", status:"ativo", cor:"linear-gradient(135deg,#1abc9c,#76d7c4)", ini:"TR", ultima:"21/05/2026" },
-  { nome:"Mariana Costa", cargo:"Analista", email:"mariana@empresa.com", time:"Suporte", indice:63, risco:"Moderado", status:"ativo", cor:"linear-gradient(135deg,#e67e22,#f0b27a)", ini:"MC", ultima:"18/05/2026" },
-  { nome:"Lucas Pereira", cargo:"Dev Junior", email:"lucas@empresa.com", time:"Engenharia", indice:71, risco:"Baixo", status:"ativo", cor:"linear-gradient(135deg,#3498db,#85c1e9)", ini:"LP", ultima:"23/05/2026" },
-];
-
-function getBadge(risco) {
-  if (risco === "Alto")     return '<span class="badge badge-red">Alto Risco</span>';
-  if (risco === "Moderado") return '<span class="badge badge-yellow">Moderado</span>';
-  return '<span class="badge badge-green">Saudável</span>';
-}
-
-function getIndiceColor(v) {
-  if (v < 55) return '#e74c3c';
-  if (v < 70) return '#f1c40f';
-  return '#2ecc71';
-}
-
-function renderCards(lista) {
-  const grid = document.getElementById('collabGrid');
-  if (lista.length === 0) {
-    grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);grid-column:1/-1;text-align:center;padding:40px">Nenhum colaborador encontrado.</p>';
-    return;
-  }
-  grid.innerHTML = lista.map(c => `
-    <div class="collab-card">
-      <div class="collab-header">
-        <div class="collab-avatar" style="background:${c.cor}">${c.ini}</div>
-        <div>
-          <div class="collab-card-name">${c.nome}</div>
-          <div class="collab-card-role">${c.cargo} · ${c.time}</div>
-          <div class="collab-card-email">${c.email}</div>
-        </div>
-      </div>
-      <div class="collab-metrics">
-        <div class="metric-pill">
-          <div class="val" style="color:${getIndiceColor(c.indice)}">${c.indice}%</div>
-          <div class="lbl">Índice</div>
-        </div>
-        <div class="metric-pill">
-          <div class="val" style="font-size:13px">${c.risco}</div>
-          <div class="lbl">Risco</div>
-        </div>
-        <div class="metric-pill">
-          <div class="val" style="font-size:12px">${c.ultima}</div>
-          <div class="lbl">Última sessão</div>
-        </div>
-      </div>
-      <div class="collab-footer">
-        ${getBadge(c.risco)}
-        <button class="btn btn-sm btn-ghost">Ver Relatório</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function filtrar() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('filterStatus').value;
-  const time   = document.getElementById('filterTime').value;
-
-  const filtrado = colaboradores.filter(c => {
-    const matchSearch = c.nome.toLowerCase().includes(search) || c.time.toLowerCase().includes(search) || c.cargo.toLowerCase().includes(search);
-    const matchStatus = !status || c.status === status;
-    const matchTime   = !time   || c.time === time;
-    return matchSearch && matchStatus && matchTime;
-  });
-
-  renderCards(filtrado);
-}
+HarmoniAuth.requireAuth();
 
 function enviarConvite() {
+  const nome  = document.getElementById('convidadoNome').value.trim();
+  const email = document.getElementById('convidadoEmail').value.trim();
+  if (!nome || !email) { alert('Preencha nome e e-mail.'); return; }
   document.getElementById('modalConvite').classList.remove('open');
-  // integração com backend aqui
-  alert('Convite enviado com sucesso!');
+  alert(`Convite enviado para ${nome}!`);
+  document.getElementById('convidadoNome').value = '';
+  document.getElementById('convidadoEmail').value = '';
+  document.getElementById('convidadoCargo').value = '';
 }
-
-// Init
-renderCards(colaboradores);
 </script>
 </body>
 </html>

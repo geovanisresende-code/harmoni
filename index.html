@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Dashboard</title>
 <link rel="stylesheet" href="harmoni.css">
 <script src="menu.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 
 .welcome-banner {
@@ -62,7 +62,18 @@
 .quick-card h3    { font-size: 16px; font-weight: 600; color: #ff6f91; margin-bottom: 8px; }
 .quick-card p     { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
 
-.chart-wrap { position: relative; height: 180px; }
+.empty-chart {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  gap: 10px;
+}
+
+.empty-chart span { font-size: 32px; }
 
 </style>
 </head>
@@ -90,11 +101,11 @@
   <!-- Boas-vindas -->
   <div class="welcome-banner">
     <div class="welcome-text">
-      <h2>Bom dia, <span data-user-name>Colaborador</span>! 👋</h2>
-      <p>Seu último relatório indica equilíbrio saudável. Continue assim!</p>
+      <h2>Olá, <span data-user-name>Colaborador</span>! 👋</h2>
+      <p>Faça sua primeira análise emocional para começar a acompanhar sua evolução.</p>
     </div>
     <div class="streak-badge">
-      <div class="num">7</div>
+      <div class="num">—</div>
       <div class="lbl">dias em sequência</div>
     </div>
   </div>
@@ -103,23 +114,23 @@
   <div class="grid-4" style="margin-bottom:30px">
     <div class="card" style="text-align:center">
       <div class="card-title">Índice Geral</div>
-      <div class="card-value" style="color:#2ecc71">74%</div>
-      <div class="card-label">↑ +7pts vs. última sessão</div>
+      <div class="card-value" style="color:rgba(255,255,255,0.35)">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
     </div>
     <div class="card" style="text-align:center">
       <div class="card-title">Energia</div>
-      <div class="card-value">78%</div>
-      <div class="card-label">Boa estabilidade</div>
+      <div class="card-value" style="color:rgba(255,255,255,0.35)">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
     </div>
     <div class="card" style="text-align:center">
       <div class="card-title">Estresse</div>
-      <div class="card-value" style="color:#f1c40f">42%</div>
-      <div class="card-label">Nível moderado</div>
+      <div class="card-value" style="color:rgba(255,255,255,0.35)">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
     </div>
     <div class="card" style="text-align:center">
       <div class="card-title">Risco Exaustão</div>
-      <div class="card-value" style="color:#2ecc71">35%</div>
-      <div class="card-label">Baixo risco</div>
+      <div class="card-value" style="color:rgba(255,255,255,0.35)">—</div>
+      <div class="card-label">Nenhuma análise ainda</div>
     </div>
   </div>
 
@@ -156,14 +167,15 @@
 
   </div>
 
-  <!-- Gráfico de evolução resumido -->
+  <!-- Gráfico vazio -->
   <div class="card">
     <div class="section-header">
-      <div class="section-title">Sua Evolução — Últimos 6 Meses</div>
+      <div class="section-title">Sua Evolução</div>
       <a href="indicadores.html" class="btn btn-ghost btn-sm">Ver detalhes →</a>
     </div>
-    <div class="chart-wrap">
-      <canvas id="chartEvo"></canvas>
+    <div class="empty-chart">
+      <span>📈</span>
+      Seus dados aparecerão aqui após a primeira análise
     </div>
   </div>
 
@@ -172,45 +184,8 @@
 
 <script src="auth.js"></script>
 <script>
-const user = HarmoniAuth.requireAuth();
+HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
-const ctx = document.getElementById('chartEvo').getContext('2d');
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
-    datasets: [
-      {
-        label: 'Índice Geral',
-        data: [62, 68, 65, 72, 67, 74],
-        borderColor: '#ff7a18',
-        backgroundColor: 'rgba(255,122,24,0.12)',
-        tension: 0.4, fill: true,
-        pointBackgroundColor: '#ff7a18', pointRadius: 4
-      },
-      {
-        label: 'Estresse',
-        data: [55, 48, 52, 45, 50, 42],
-        borderColor: '#ff6f91',
-        backgroundColor: 'transparent',
-        tension: 0.4,
-        borderDash: [5,4],
-        pointBackgroundColor: '#ff6f91', pointRadius: 3
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } } }
-    },
-    scales: {
-      x: { ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
-      y: { min: 0, max: 100, ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
-    }
-  }
-});
 </script>
 </body>
 </html>

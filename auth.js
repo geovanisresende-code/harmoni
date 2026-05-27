@@ -1,6 +1,6 @@
 /**
  * Harmoni — Gerenciamento de sessão (frontend)
- * Usa sessionStorage para manter o usuário logado.
+ * Usa localStorage para manter o usuário logado entre páginas.
  * API_URL aponta para /api (mesmo domínio na Vercel).
  */
 
@@ -10,23 +10,22 @@ const HarmoniAuth = {
 
   // Salva o usuário após login
   login(userData) {
-    sessionStorage.setItem('harmoni_user', JSON.stringify(userData));
+    localStorage.setItem('harmoni_user', JSON.stringify(userData));
   },
 
   // Remove a sessão (logout)
   logout() {
-    sessionStorage.removeItem('harmoni_user');
+    localStorage.removeItem('harmoni_user');
     window.location.href = 'login.html';
   },
 
   // Retorna o usuário logado ou null
   getUser() {
-    const data = sessionStorage.getItem('harmoni_user');
+    const data = localStorage.getItem('harmoni_user');
     return data ? JSON.parse(data) : null;
   },
 
   // Redireciona para login se não estiver autenticado
-  // Chame no topo de todas as páginas protegidas
   requireAuth() {
     const user = this.getUser();
     if (!user) {

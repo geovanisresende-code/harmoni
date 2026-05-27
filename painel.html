@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Harmoni - Plataforma IA</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+
+body{display:flex;background:#f6f8f7;}
+
+.sidebar{
+  width:240px;
+  min-height:100vh;
+  background:#1f4f2b;
+  padding:25px;
+  color:#fff;
+}
+
+.sidebar h2{color:#9be27d;margin-bottom:30px;}
+
+.sidebar div{
+  display:flex;gap:10px;
+  padding:12px;border-radius:10px;
+  margin-bottom:10px;cursor:pointer;
+}
+
+.sidebar div:hover{background:#2f6b3f;}
+
+.content{flex:1;padding:30px;}
+
+.topbar h1{color:#2f6b3f;margin-bottom:20px;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card.big{text-align:center;}
+.card.big h2{font-size:30px;color:#2f6b3f;}
+
+.search{
+  width:100%;
+  padding:10px;
+  margin:15px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+#listaClientes div{
+  background:#f0f4f2;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+.status{
+  padding:5px 10px;
+  border-radius:8px;
+  font-size:12px;
+}
+
+.ativo{background:#2ecc71;color:#fff;}
+.inativo{background:#e74c3c;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>Harmoni</h2>
+
+  <div onclick="trocar('dash')">
+    <i class="fa-solid fa-chart-line"></i> Dashboard
+  </div>
+
+  <div onclick="trocar('clientes')">
+    <i class="fa-solid fa-users"></i> Clientes
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="topbar">
+    <h1>
+        
+    </h1>
+  </div>
+
+  <!-- DASH -->
+  <div id="dash">
+    <div class="grid">
+
+      <div class="card big">
+        <span>Clientes Ativos</span>
+        <h2 id="totalClientes">0</h2>
+      </div>
+
+      <div class="card big">
+        <span>Receita Mensal</span>
+        <h2>R$ <span id="receita">0</span></h2>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h3>Receita Mensal</h3>
+      <canvas id="grafico"></canvas>
+    </div>
+  </div>
+
+  <!-- CLIENTES -->
+  <div id="clientes" style="display:none">
+    <div class="card">
+      <h3>Clientes</h3>
+
+      <input 
+        type="text" 
+        placeholder="Buscar cliente..." 
+        class="search"
+        oninput="filtrarClientes(this.value)"
+      >
+
+      <div id="listaClientes"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+let clientesGlobal = [];
+let chart;
+
+// DADOS MOCK (simula SaaS)
+function carregarClientes(){
+  const data = [
+    {nome:"João", email:"joao@email.com", plano:50, status:"ativo", data:"2026-04-01"},
+    {nome:"Maria", email:"maria@email.com", plano:50, status:"ativo", data:"2026-04-02"},
+    {nome:"Carlos", email:"carlos@email.com", plano:50, status:"inativo", data:"2026-04-02"},
+    {nome:"Ana", email:"ana@email.com", plano:100, status:"ativo", data:"2026-04-03"}
+  ];
+
+  clientesGlobal = data;
+
+  renderClientes(data);
+  atualizarDashboard(data);
+  gerarGrafico(data);
+}
+
+function trocar(aba){
+  document.getElementById("dash").style.display="none";
+  document.getElementById("clientes").style.display="none";
+  document.getElementById(aba).style.display="block";
+}
+
+function renderClientes(lista){
+  listaClientes.innerHTML = "";
+
+  lista.forEach(c=>{
+    listaClientes.innerHTML += `
+      <div>
+        <b>${c.nome}</b><br>
+        ${c.email}<br>
+        Plano: R$ ${c.plano}/mês<br>
+        <span class="status ${c.status}">${c.status}</span>
+      </div>
+    `;
+  });
+}
+
+function filtrarClientes(texto){
+  const filtrado = clientesGlobal.filter(c =>
+    c.nome.toLowerCase().includes(texto.toLowerCase())
+  );
+
+  renderClientes(filtrado);
+}
+
+function atualizarDashboard(data){
+  const ativos = data.filter(c=>c.status==="ativo");
+
+  totalClientes.innerText = ativos.length;
+
+  let receita = 0;
+  ativos.forEach(c=> receita += c.plano);
+
+  document.getElementById("receita").innerText = receita.toFixed(2);
+}
+
+function gerarGrafico(data){
+  const mapa = {};
+
+  data.forEach(c=>{
+    if(c.status !== "ativo") return;
+
+    const dia = c.data;
+
+    if(!mapa[dia]) mapa[dia] = 0;
+    mapa[dia] += c.plano;
+  });
+
+  const labels = Object.keys(mapa);
+  const valores = Object.values(mapa);
+
+  if(chart) chart.destroy();
+
+  const ctx = document.getElementById("grafico");
+
+  chart = new Chart(ctx, {
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"Receita",
+        data:valores,
+        tension:0.4,
+        fill:true
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}}
+    }
+  });
+}
+
+carregarClientes();
+
+</script>
+
+</body>
+</html>

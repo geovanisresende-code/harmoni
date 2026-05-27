@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Relatório Emocional</title>
+<link rel="stylesheet" href="harmoni.css">
+<script src="menu.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+
+/* ── Cabeçalho do relatório ── */
+.report-header {
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.report-meta h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.report-meta p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 3px;
+}
+
+.score-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: conic-gradient(#ff7a18 0% 74%, rgba(255,255,255,0.12) 74%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.score-circle::before {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(30, 15, 40, 0.6);
+}
+
+.score-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.score-inner span:first-child {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.score-inner span:last-child {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Indicadores individuais ── */
+.indicator-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.indicator-row .label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+}
+
+/* ── Seção análise textual ── */
+.analysis-block {
+  background: rgba(255,255,255,0.08);
+  border-left: 3px solid #ff6f91;
+  border-radius: 0 12px 12px 0;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.analysis-block strong {
+  color: #ff9472;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+/* ── Plano de ação ── */
+.action-item {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.action-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7a18, #ffb347);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.action-text {
+  flex: 1;
+}
+
+.action-text strong {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.action-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+}
+
+/* ── Gráfico ── */
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}
+
+/* ── Botões de ação do relatório ── */
+.report-actions-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Harmoni">
+  </div>
+  <div class="menu">
+    <a href="index.html">Dashboard</a>
+    <a href="chat.html">Nova Análise</a>
+    <a href="indicadores.html">Indicadores</a>
+    <a href="historico.html" class="active">Relatórios</a>
+  </div>
+  <div class="topbar-user">
+    <span>Olá, <span data-user-name>Colaborador</span></span>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="container">
+
+  <!-- Ações rápidas -->
+  <div class="report-actions-bar">
+    <button class="btn btn-ghost" onclick="history.back()">← Voltar</button>
+    <button class="btn btn-secondary" onclick="window.print()">⬇ Baixar PDF</button>
+    <button class="btn btn-accent" onclick="window.location.href='chat.html'">+ Nova Análise</button>
+  </div>
+
+  <!-- Cabeçalho do Relatório -->
+  <div class="report-header">
+    <div class="report-meta">
+      <h2>Relatório Emocional — 05 de Março de 2026</h2>
+      <p>Colaborador: <strong style="color:#fff">Carlos Andrade</strong></p>
+      <p>Sessão de análise: <strong style="color:#fff">45 minutos</strong></p>
+      <p>Status geral: <span class="badge badge-green" style="margin-left:4px">Saudável</span></p>
+    </div>
+    <div class="score-circle">
+      <div class="score-inner">
+        <span>74%</span>
+        <span>Índice Geral</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid principal -->
+  <div class="grid-2" style="margin-bottom:30px">
+
+    <!-- Indicadores detalhados -->
+    <div class="card">
+      <div class="card-title">Indicadores da Sessão</div>
+
+      <div class="indicator-row" style="margin-bottom:18px">
+        <div class="label-row"><span>Nível de Energia</span><span style="color:#fff;font-weight:600">78%</span></div>
+        <div class="progress-bar"><div class="progress-fill green" style="width:78%"></div></div>
+      </div>
+
+      <div class="indicator-row" style="margin-bottom:18px">
+        <div class="label-row"><span>Estresse Percebido</span><span style="color:#fff;font-weight:600">42%</span></div>
+        <div class="progress-bar"><div class="progress-fill pink" style="width:42%"></div></div>
+      </div>
+
+      <div class="indicator-row" style="margin-bottom:18px">
+        <div class="label-row"><span>Risco de Exaustão</span><span style="color:#fff;font-weight:600">35%</span></div>
+        <div class="progress-bar"><div class="progress-fill blue" style="width:35%"></div></div>
+      </div>
+
+      <div class="indicator-row">
+        <div class="label-row"><span>Engajamento</span><span style="color:#fff;font-weight:600">81%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:81%"></div></div>
+      </div>
+    </div>
+
+    <!-- Gráfico de evolução -->
+    <div class="card">
+      <div class="card-title">Evolução — Últimas 6 Sessões</div>
+      <div class="chart-wrap">
+        <canvas id="chartEvolucao"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Análise qualitativa da IA -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Análise da IA Harmoni</div>
+    </div>
+
+    <div class="analysis-block">
+      <strong>✦ Contexto Emocional</strong>
+      Carlos demonstrou sinais de equilíbrio emocional positivo durante a sessão. A linguagem utilizada evidencia estabilidade afetiva, com poucas ocorrências de vocabulário associado a estados de exaustão ou ansiedade elevada.
+    </div>
+
+    <div class="analysis-block">
+      <strong>✦ Pontos de Atenção</strong>
+      Foi identificado leve aumento de estresse relacionado a prazos e sobrecarga de tarefas. Recomenda-se atenção às rotinas de descanso e comunicação com a liderança sobre prioridades.
+    </div>
+
+    <div class="analysis-block">
+      <strong>✦ Evolução em Relação à Última Sessão</strong>
+      Melhora de 7 pontos no índice geral em comparação à sessão de 20/02/2026. O risco de exaustão caiu de 48% para 35%, indicando resposta positiva às ações recomendadas anteriormente.
+    </div>
+  </div>
+
+  <!-- Plano de Ação -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Plano de Ação Personalizado</div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-number">1</div>
+      <div class="action-text">
+        <strong>Pausas ativas durante o expediente</strong>
+        <p>Reserve 5–10 minutos a cada 90 minutos de trabalho para movimentação ou respiração. Use técnicas como 4–7–8 para redução imediata do estresse.</p>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-number">2</div>
+      <div class="action-text">
+        <strong>Higiene do sono</strong>
+        <p>Estabeleça um horário fixo para dormir, evite telas 1 hora antes de dormir e mantenha o quarto com temperatura amena entre 18–22°C.</p>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-number">3</div>
+      <div class="action-text">
+        <strong>Comunicação proativa com sua liderança</strong>
+        <p>Marque uma conversa breve com seu gestor sobre priorização de demandas. Expressar suas necessidades reduz o estresse gerado por expectativas mal alinhadas.</p>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-number">4</div>
+      <div class="action-text">
+        <strong>Atividade física regular</strong>
+        <p>Pelo menos 30 minutos de caminhada ou exercício leve 3 vezes por semana já produz redução mensurável de cortisol e melhora o humor geral.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Próxima sessão -->
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+    <div>
+      <div class="card-title" style="margin-bottom:4px">Próxima Sessão Recomendada</div>
+      <p style="color:rgba(255,255,255,0.7);font-size:14px">Em 14 dias — 19 de Março de 2026</p>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="window.location.href='chat.html'">Iniciar Nova Análise</button>
+  </div>
+
+  <div class="footer">Harmoni © 2026 · Relatório gerado por IA · Confidencial</div>
+
+</div>
+
+<script src="auth.js"></script>
+<script>
+HarmoniAuth.requireAuth();
+HarmoniAuth.fillUserName();
+// Gráfico de evolução
+const ctx = document.getElementById('chartEvolucao').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar'],
+    datasets: [{
+      label: 'Índice Geral',
+      data: [62, 68, 65, 72, 67, 74],
+      borderColor: '#ff7a18',
+      backgroundColor: 'rgba(255,122,24,0.15)',
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#ff7a18',
+      pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: {
+        ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.06)' }
+      },
+      y: {
+        min: 0, max: 100,
+        ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.06)' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

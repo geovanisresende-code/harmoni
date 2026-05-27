@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Assinatura</title>
+<link rel="stylesheet" href="harmoni.css">
+<script src="menu.js" defer></script>
+<style>
+
+/* ── Planos ── */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.plan-card {
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 28px 24px;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.plan-card:hover { transform: translateY(-5px); }
+.plan-card.active {
+  border-color: #ff7a18;
+  background: rgba(255,122,24,0.1);
+}
+
+.plan-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.plan-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.plan-price {
+  font-size: 38px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.plan-price span {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+}
+
+.plan-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+
+.plan-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.plan-features li {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-features li:last-child { border-bottom: none; }
+
+.feat-check { color: #2ecc71; font-size: 14px; }
+.feat-no    { color: rgba(255,255,255,0.25); font-size: 14px; }
+
+/* ── Resumo da assinatura atual ── */
+.billing-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.summary-item {
+  background: rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+}
+
+.summary-item .val { font-size: 22px; font-weight: 700; color: #fff; }
+.summary-item .lbl { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+/* ── Faturas ── */
+.invoice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.invoice-row:last-child { border-bottom: none; }
+
+.invoice-date { font-size: 14px; color: #fff; }
+.invoice-desc { font-size: 13px; color: rgba(255,255,255,0.55); }
+.invoice-val  { font-size: 15px; font-weight: 600; color: #fff; }
+
+/* ── Cartão ── */
+.card-preview {
+  background: linear-gradient(135deg, rgba(255,122,24,0.4), rgba(43,176,230,0.3));
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 320px;
+}
+
+.card-number { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: 3px; }
+.card-info   { display: flex; justify-content: space-between; align-items: center; }
+.card-label  { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+.card-val    { font-size: 14px; color: #fff; font-weight: 500; }
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR RH -->
+<div class="topbar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Harmoni">
+  </div>
+  <div class="menu menu-rh">
+    <a href="dashboard-rh.html">Visão Geral</a>
+    <a href="colaboradores.html">Colaboradores</a>
+    <a href="billing.html" class="active">Assinatura</a>
+  </div>
+  <div class="topbar-user">
+    <span class="badge badge-blue" style="margin-right:6px">RH</span>
+    <span>Empresa XYZ</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="page-title">Assinatura & Cobrança</div>
+
+  <!-- Resumo atual -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Sua Assinatura Atual</div>
+      <span class="badge badge-green">Ativa</span>
+    </div>
+
+    <div class="billing-summary">
+      <div class="summary-item">
+        <div class="val">Starter</div>
+        <div class="lbl">Plano atual</div>
+      </div>
+      <div class="summary-item">
+        <div class="val">48</div>
+        <div class="lbl">Colaboradores</div>
+      </div>
+      <div class="summary-item">
+        <div class="val" style="color:#ffb347">R$ 2.400</div>
+        <div class="lbl">Próxima cobrança</div>
+      </div>
+      <div class="summary-item">
+        <div class="val">05/06</div>
+        <div class="lbl">Data de renovação</div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning" style="margin-bottom:0">
+      ⚡ Você está usando 96% do limite de colaboradores do plano Starter. Considere fazer upgrade para o Pro.
+    </div>
+  </div>
+
+  <!-- Planos -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Planos Disponíveis</div>
+      <div style="display:flex;gap:8px;font-size:13px;background:rgba(255,255,255,0.1);border-radius:25px;padding:4px">
+        <button class="filter-btn active" id="btnMensal" onclick="toggleCiclo('mensal')" style="border-radius:20px;padding:6px 14px;border:none;background:rgba(255,122,24,0.3);color:#ffb347;cursor:pointer;font-size:12px;font-weight:600">Mensal</button>
+        <button class="filter-btn" id="btnAnual" onclick="toggleCiclo('anual')" style="border-radius:20px;padding:6px 14px;border:none;background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;font-size:12px">Anual −20%</button>
+      </div>
+    </div>
+
+    <div class="plans-grid">
+
+      <!-- Starter -->
+      <div class="plan-card active" id="planStarter" onclick="selecionarPlano('Starter')">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price" id="priceStarter">R$ 50<span>/colab/mês</span></div>
+        <div class="plan-sub">Até 50 colaboradores</div>
+        <ul class="plan-features">
+          <li><span class="feat-check">✓</span> Análise emocional via IA</li>
+          <li><span class="feat-check">✓</span> Relatórios individuais</li>
+          <li><span class="feat-check">✓</span> Dashboard RH básico</li>
+          <li><span class="feat-check">✓</span> Alertas de risco</li>
+          <li><span class="feat-no">✗</span> Relatórios personalizados</li>
+          <li><span class="feat-no">✗</span> Integração HR Systems</li>
+          <li><span class="feat-no">✗</span> SLA dedicado</li>
+        </ul>
+        <button class="btn btn-ghost btn-full">Plano Atual</button>
+      </div>
+
+      <!-- Pro -->
+      <div class="plan-card" id="planPro" onclick="selecionarPlano('Pro')">
+        <div class="plan-badge">⭐ MAIS POPULAR</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price" id="pricePro">R$ 80<span>/colab/mês</span></div>
+        <div class="plan-sub">Até 200 colaboradores</div>
+        <ul class="plan-features">
+          <li><span class="feat-check">✓</span> Tudo do Starter</li>
+          <li><span class="feat-check">✓</span> Relatórios personalizados</li>
+          <li><span class="feat-check">✓</span> Dashboard avançado</li>
+          <li><span class="feat-check">✓</span> Histórico completo</li>
+          <li><span class="feat-check">✓</span> Integração RH básica</li>
+          <li><span class="feat-no">✗</span> Integração HR Systems</li>
+          <li><span class="feat-no">✗</span> SLA dedicado</li>
+        </ul>
+        <button class="btn btn-primary btn-full">Fazer Upgrade</button>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="plan-card" id="planEnterprise" onclick="selecionarPlano('Enterprise')">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price" id="priceEnterprise">Sob<span> consulta</span></div>
+        <div class="plan-sub">Colaboradores ilimitados</div>
+        <ul class="plan-features">
+          <li><span class="feat-check">✓</span> Tudo do Pro</li>
+          <li><span class="feat-check">✓</span> Integração HR Systems</li>
+          <li><span class="feat-check">✓</span> SSO / SAML</li>
+          <li><span class="feat-check">✓</span> SLA 99.9% dedicado</li>
+          <li><span class="feat-check">✓</span> RAG com base própria</li>
+          <li><span class="feat-check">✓</span> Relatórios white-label</li>
+          <li><span class="feat-check">✓</span> Suporte premium 24/7</li>
+        </ul>
+        <button class="btn btn-accent btn-full">Falar com Vendas</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Método de pagamento -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Método de Pagamento</div>
+      <button class="btn btn-ghost btn-sm">Trocar Cartão</button>
+    </div>
+
+    <div class="card" style="display:flex;gap:30px;align-items:center;flex-wrap:wrap">
+      <div class="card-preview">
+        <div class="card-number">•••• •••• •••• 4242</div>
+        <div class="card-info">
+          <div>
+            <div class="card-label">Titular</div>
+            <div class="card-val">Empresa XYZ Ltda</div>
+          </div>
+          <div>
+            <div class="card-label">Validade</div>
+            <div class="card-val">08/28</div>
+          </div>
+          <div>
+            <div class="card-label">Bandeira</div>
+            <div class="card-val">Visa</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:12px">Cobranças automáticas todo dia 5 de cada mês. Boleto disponível para plano Enterprise.</p>
+        <button class="btn btn-ghost btn-sm">+ Adicionar Método</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Histórico de faturas -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Histórico de Faturas</div>
+      <button class="btn btn-ghost btn-sm">⬇ Exportar Todas</button>
+    </div>
+
+    <div class="card" style="padding:0">
+      <div class="invoice-row">
+        <div>
+          <div class="invoice-date">Maio 2026</div>
+          <div class="invoice-desc">Harmoni Starter · 48 colaboradores</div>
+        </div>
+        <div class="invoice-val">R$ 2.400,00</div>
+        <span class="badge badge-green">Pago</span>
+        <button class="btn btn-ghost btn-sm">PDF</button>
+      </div>
+      <div class="invoice-row">
+        <div>
+          <div class="invoice-date">Abril 2026</div>
+          <div class="invoice-desc">Harmoni Starter · 45 colaboradores</div>
+        </div>
+        <div class="invoice-val">R$ 2.250,00</div>
+        <span class="badge badge-green">Pago</span>
+        <button class="btn btn-ghost btn-sm">PDF</button>
+      </div>
+      <div class="invoice-row">
+        <div>
+          <div class="invoice-date">Março 2026</div>
+          <div class="invoice-desc">Harmoni Starter · 40 colaboradores</div>
+        </div>
+        <div class="invoice-val">R$ 2.000,00</div>
+        <span class="badge badge-green">Pago</span>
+        <button class="btn btn-ghost btn-sm">PDF</button>
+      </div>
+      <div class="invoice-row">
+        <div>
+          <div class="invoice-date">Fevereiro 2026</div>
+          <div class="invoice-desc">Harmoni Starter · 32 colaboradores</div>
+        </div>
+        <div class="invoice-val">R$ 1.600,00</div>
+        <span class="badge badge-green">Pago</span>
+        <button class="btn btn-ghost btn-sm">PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancelamento -->
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:rgba(231,76,60,0.07);border-color:rgba(231,76,60,0.2)">
+    <div>
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px">Cancelar Assinatura</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.55)">Ao cancelar, os colaboradores perderão acesso ao término do ciclo atual.</div>
+    </div>
+    <button class="btn btn-danger btn-sm">Solicitar Cancelamento</button>
+  </div>
+
+  <div class="footer">Harmoni © 2026 · Cobrança segura via Stripe · CNPJ 00.000.000/0001-00</div>
+</div>
+
+<script>
+let ciclo = 'mensal';
+
+const precos = {
+  mensal: { Starter: 'R$ 50<span>/colab/mês</span>', Pro: 'R$ 80<span>/colab/mês</span>', Enterprise: 'Sob<span> consulta</span>' },
+  anual:  { Starter: 'R$ 40<span>/colab/mês</span>', Pro: 'R$ 64<span>/colab/mês</span>', Enterprise: 'Sob<span> consulta</span>' }
+};
+
+function toggleCiclo(c) {
+  ciclo = c;
+  document.getElementById('priceStarter').innerHTML    = precos[c].Starter;
+  document.getElementById('pricePro').innerHTML        = precos[c].Pro;
+  document.getElementById('priceEnterprise').innerHTML = precos[c].Enterprise;
+
+  document.getElementById('btnMensal').style.background = c === 'mensal' ? 'rgba(255,122,24,0.3)' : 'transparent';
+  document.getElementById('btnMensal').style.color      = c === 'mensal' ? '#ffb347' : 'rgba(255,255,255,0.6)';
+  document.getElementById('btnAnual').style.background  = c === 'anual'  ? 'rgba(255,122,24,0.3)' : 'transparent';
+  document.getElementById('btnAnual').style.color       = c === 'anual'  ? '#ffb347' : 'rgba(255,255,255,0.6)';
+}
+
+function selecionarPlano(nome) {
+  ['planStarter','planPro','planEnterprise'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  const map = { Starter:'planStarter', Pro:'planPro', Enterprise:'planEnterprise' };
+  document.getElementById(map[nome]).classList.add('active');
+}
+</script>
+</body>
+</html>

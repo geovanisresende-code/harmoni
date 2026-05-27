@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Harmoni Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+
+body{display:flex;background:#f5f7f6;}
+
+.sidebar{
+  width:230px;
+  background:#1f4f2b;
+  min-height:100vh;
+  color:#fff;
+  padding:20px;
+}
+
+.sidebar h2{color:#9be27d;margin-bottom:30px;}
+
+.sidebar div{
+  padding:12px;
+  margin-bottom:10px;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+.sidebar div:hover{background:#2f6b3f;}
+
+.content{flex:1;padding:25px;}
+
+.topbar h1{color:#2f6b3f;margin-bottom:20px;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card h2{color:#2f6b3f;margin-top:10px;}
+
+#clientes{display:none;}
+
+.item{
+  background:#eef3f1;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+
+.status{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:6px;
+}
+
+.ativo{background:#2ecc71;color:#fff;}
+.inativo{background:#e74c3c;color:#fff;}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>Harmoni</h2>
+
+  <div onclick="show('dash')"><i class="fa fa-chart-line"></i> Dashboard</div>
+  <div onclick="show('clientes')"><i class="fa fa-users"></i> Clientes</div>
+</div>
+
+<div class="content">
+
+  <div class="topbar">
+    <h1>Plataforma de IA</h1>
+  </div>
+
+  <!-- DASH -->
+  <div id="dash">
+    <div class="grid">
+      <div class="card">
+        Clientes Ativos
+        <h2 id="clientesAtivos">0</h2>
+      </div>
+
+      <div class="card">
+        Receita Mensal
+        <h2>R$ <span id="receita">0</span></h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENTES -->
+  <div id="clientes">
+    <input placeholder="Buscar..." oninput="buscar(this.value)">
+    <div id="lista"></div>
+  </div>
+
+</div>
+
+<script>
+
+// DADOS MOCK
+let clientes = [
+  {nome:"João", plano:50, status:"ativo"},
+  {nome:"Maria", plano:50, status:"ativo"},
+  {nome:"Carlos", plano:50, status:"inativo"},
+  {nome:"Ana", plano:100, status:"ativo"}
+];
+
+function init(){
+  render(clientes);
+  calc();
+}
+
+function show(id){
+  document.getElementById("dash").style.display="none";
+  document.getElementById("clientes").style.display="none";
+  document.getElementById(id).style.display="block";
+}
+
+function render(lista){
+  let html="";
+  lista.forEach(c=>{
+    html+=`
+      <div class="item">
+        <b>${c.nome}</b><br>
+        Plano: R$ ${c.plano}/mês<br>
+        <span class="status ${c.status}">${c.status}</span>
+      </div>
+    `;
+  });
+  document.getElementById("lista").innerHTML=html;
+}
+
+function buscar(txt){
+  let f=clientes.filter(c=>c.nome.toLowerCase().includes(txt.toLowerCase()));
+  render(f);
+}
+
+function calc(){
+  let ativos=clientes.filter(c=>c.status==="ativo");
+  document.getElementById("clientesAtivos").innerText=ativos.length;
+
+  let total=0;
+  ativos.forEach(c=>total+=c.plano);
+  document.getElementById("receita").innerText=total;
+}
+
+init();
+
+</script>
+
+</body>
+</html>

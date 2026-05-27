@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmoni – Dashboard RH</title>
+<link rel="stylesheet" href="harmoni.css">
+<script src="menu.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+
+/* ── Alerta de risco ── */
+.risk-alert {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(231,76,60,0.12);
+  border: 1px solid rgba(231,76,60,0.35);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.risk-alert:hover { background: rgba(231,76,60,0.2); }
+
+.risk-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #e74c3c;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(231,76,60,0); }
+}
+
+.risk-info { flex: 1; }
+.risk-info strong { color: #fff; font-size: 14px; display: block; margin-bottom: 2px; }
+.risk-info span   { color: rgba(255,255,255,0.6); font-size: 13px; }
+
+/* ── Heat map de times ── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.team-tile {
+  background: rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.team-tile:hover { transform: translateY(-4px); }
+
+.team-score {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.team-name {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 8px;
+}
+
+.team-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ── Score color ── */
+.score-high   { color: #2ecc71; }
+.score-medium { color: #f1c40f; }
+.score-low    { color: #e74c3c; }
+
+/* ── Tabela top colaboradores em risco ── */
+.avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6f91, #ff9472);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.collab-info { display: flex; align-items: center; gap: 10px; }
+.collab-name { font-size: 14px; color: #fff; font-weight: 500; }
+.collab-role { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+/* ── Filtros topbar ── */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: rgba(255,122,24,0.25);
+  border-color: #ff7a18;
+  color: #ffb347;
+}
+
+/* ── Gráfico wrap ── */
+.chart-wrap { position: relative; height: 230px; }
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR RH -->
+<div class="topbar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Harmoni">
+  </div>
+  <div class="menu menu-rh">
+    <a href="dashboard-rh.html" class="active">Visão Geral</a>
+    <a href="colaboradores.html">Colaboradores</a>
+    <a href="billing.html">Assinatura</a>
+  </div>
+  <div class="topbar-user">
+    <span class="badge badge-blue" style="margin-right:6px">RH</span>
+    <span>Empresa XYZ</span>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="container">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="page-title" style="margin-bottom:4px">Dashboard RH</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)">Última atualização: 27 de maio de 2026</div>
+    </div>
+    <button class="btn btn-primary" onclick="window.location.href='colaboradores.html'">+ Convidar Colaborador</button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-bar">
+    <button class="filter-btn active">Todos os Times</button>
+    <button class="filter-btn">Engenharia</button>
+    <button class="filter-btn">Vendas</button>
+    <button class="filter-btn">Suporte</button>
+    <button class="filter-btn">Design</button>
+    <button class="filter-btn">Produto</button>
+  </div>
+
+  <!-- KPIs principais -->
+  <div class="grid-4" style="margin-bottom:30px">
+
+    <div class="card" style="text-align:center">
+      <div class="card-title">Colaboradores Ativos</div>
+      <div class="card-value">48</div>
+      <div class="card-label">+3 este mês</div>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <div class="card-title">Índice Médio</div>
+      <div class="card-value" style="color:#2ecc71">71%</div>
+      <div class="card-label">↑ +4pts vs. mês anterior</div>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <div class="card-title">Em Risco</div>
+      <div class="card-value" style="color:#e74c3c">6</div>
+      <div class="card-label">Exaustão elevada</div>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <div class="card-title">Sessões este Mês</div>
+      <div class="card-value">134</div>
+      <div class="card-label">Taxa de engajamento: 89%</div>
+    </div>
+
+  </div>
+
+  <!-- Alertas de risco -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">⚠ Alertas Ativos</div>
+      <span class="badge badge-red">6 colaboradores</span>
+    </div>
+
+    <div class="risk-alert">
+      <div class="risk-dot"></div>
+      <div class="risk-info">
+        <strong>Ana Lima — Engenharia</strong>
+        <span>Risco de exaustão: 84% · Estresse elevado por 3 semanas consecutivas</span>
+      </div>
+      <button class="btn btn-sm btn-ghost">Ver Perfil</button>
+    </div>
+
+    <div class="risk-alert">
+      <div class="risk-dot"></div>
+      <div class="risk-info">
+        <strong>Roberto Souza — Vendas</strong>
+        <span>Risco de exaustão: 76% · Índice geral em queda por 4 sessões</span>
+      </div>
+      <button class="btn btn-sm btn-ghost">Ver Perfil</button>
+    </div>
+
+    <div class="risk-alert">
+      <div class="risk-dot"></div>
+      <div class="risk-info">
+        <strong>Juliana Matos — Suporte</strong>
+        <span>Risco de exaustão: 71% · Sinaliza sobrecarga e conflitos com liderança</span>
+      </div>
+      <button class="btn btn-sm btn-ghost">Ver Perfil</button>
+    </div>
+
+  </div>
+
+  <!-- Gráficos + Heat map -->
+  <div class="grid-2" style="margin-bottom:30px">
+
+    <div class="card">
+      <div class="card-title">Evolução do Índice Médio — 6 Meses</div>
+      <div class="chart-wrap">
+        <canvas id="chartIndice"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Distribuição de Risco</div>
+      <div class="chart-wrap" style="height:200px;display:flex;align-items:center;justify-content:center">
+        <canvas id="chartRisco"></canvas>
+      </div>
+      <div style="display:flex;justify-content:center;gap:20px;margin-top:12px;font-size:12px;color:rgba(255,255,255,0.7)">
+        <span><span style="color:#2ecc71">■</span> Baixo (30)</span>
+        <span><span style="color:#f1c40f">■</span> Moderado (12)</span>
+        <span><span style="color:#e74c3c">■</span> Alto (6)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Saúde por time -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Saúde por Time</div>
+    </div>
+    <div class="team-grid">
+
+      <div class="team-tile">
+        <div class="team-score score-high">76%</div>
+        <div class="team-name">Engenharia</div>
+        <div class="team-count">12 colaboradores</div>
+      </div>
+
+      <div class="team-tile">
+        <div class="team-score score-medium">64%</div>
+        <div class="team-name">Vendas</div>
+        <div class="team-count">9 colaboradores</div>
+      </div>
+
+      <div class="team-tile">
+        <div class="team-score score-high">79%</div>
+        <div class="team-name">Design</div>
+        <div class="team-count">5 colaboradores</div>
+      </div>
+
+      <div class="team-tile">
+        <div class="team-score score-low">58%</div>
+        <div class="team-name">Suporte</div>
+        <div class="team-count">11 colaboradores</div>
+      </div>
+
+      <div class="team-tile">
+        <div class="team-score score-high">82%</div>
+        <div class="team-name">Produto</div>
+        <div class="team-count">7 colaboradores</div>
+      </div>
+
+      <div class="team-tile">
+        <div class="team-score score-medium">69%</div>
+        <div class="team-name">Marketing</div>
+        <div class="team-count">4 colaboradores</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tabela top riscos -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Colaboradores — Necessitam Atenção</div>
+      <a href="colaboradores.html" class="btn btn-ghost btn-sm">Ver todos →</a>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              <th>Time</th>
+              <th>Índice Geral</th>
+              <th>Risco</th>
+              <th>Última Sessão</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="collab-info">
+                <div class="avatar">AL</div>
+                <div><div class="collab-name">Ana Lima</div><div class="collab-role">Dev Senior</div></div>
+              </div></td>
+              <td>Engenharia</td>
+              <td><span style="color:#e74c3c;font-weight:600">42%</span></td>
+              <td><span class="badge badge-red">Alto</span></td>
+              <td>25/05/2026</td>
+              <td><button class="btn btn-sm btn-accent">Contatar</button></td>
+            </tr>
+            <tr>
+              <td><div class="collab-info">
+                <div class="avatar" style="background:linear-gradient(135deg,#2bb0e6,#74d7f7)">RS</div>
+                <div><div class="collab-name">Roberto Souza</div><div class="collab-role">SDR</div></div>
+              </div></td>
+              <td>Vendas</td>
+              <td><span style="color:#f1c40f;font-weight:600">51%</span></td>
+              <td><span class="badge badge-red">Alto</span></td>
+              <td>24/05/2026</td>
+              <td><button class="btn btn-sm btn-accent">Contatar</button></td>
+            </tr>
+            <tr>
+              <td><div class="collab-info">
+                <div class="avatar" style="background:linear-gradient(135deg,#ff7a18,#ffb347)">JM</div>
+                <div><div class="collab-name">Juliana Matos</div><div class="collab-role">CS</div></div>
+              </div></td>
+              <td>Suporte</td>
+              <td><span style="color:#f1c40f;font-weight:600">55%</span></td>
+              <td><span class="badge badge-yellow">Moderado</span></td>
+              <td>22/05/2026</td>
+              <td><button class="btn btn-sm btn-accent">Contatar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Harmoni © 2026 · Painel de RH · Dados confidenciais</div>
+</div>
+
+<script>
+// Filtros
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Gráfico linha
+const ctx1 = document.getElementById('chartIndice').getContext('2d');
+new Chart(ctx1, {
+  type: 'line',
+  data: {
+    labels: ['Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+    datasets: [{
+      label: 'Índice Médio',
+      data: [62, 65, 67, 70, 68, 71],
+      borderColor: '#ffb347',
+      backgroundColor: 'rgba(255,179,71,0.12)',
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#ffb347',
+      pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+      y: { min: 40, max: 100, ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
+    }
+  }
+});
+
+// Gráfico donut
+const ctx2 = document.getElementById('chartRisco').getContext('2d');
+new Chart(ctx2, {
+  type: 'doughnut',
+  data: {
+    labels: ['Baixo', 'Moderado', 'Alto'],
+    datasets: [{
+      data: [30, 12, 6],
+      backgroundColor: ['rgba(46,204,113,0.8)', 'rgba(241,196,15,0.8)', 'rgba(231,76,60,0.8)'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    cutout: '65%'
+  }
+});
+</script>
+</body>
+</html>

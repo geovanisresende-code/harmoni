@@ -168,7 +168,7 @@ body {
       <div class="forgot">Esqueci minha senha</div>
       <button class="btn btn-primary btn-full btn-lg btn-login-submit" onclick="fazerLogin()">Entrar</button>
       <div class="divider">ou acesse como</div>
-      <button class="btn btn-ghost btn-full" onclick="location.href='dashboard-rh.html'">👤 Gestor de RH / Empresa</button>
+      <button class="btn btn-ghost btn-full" onclick="entrarComoRH()">👤 Gestor de RH / Empresa</button>
     </div>
 
     <!-- Cadastro -->
@@ -202,6 +202,11 @@ function switchTab(tab) {
   document.getElementById('tabCadastro').classList.toggle('active', tab === 'cadastro');
   document.getElementById('formEntrar').classList.toggle('active', tab === 'entrar');
   document.getElementById('formCadastro').classList.toggle('active', tab === 'cadastro');
+}
+
+function entrarComoRH() {
+  HarmoniAuth.login({ name: 'Empresa XYZ', email: 'rh@empresa.com', role: 'rh', token: 'mock-rh' });
+  window.location.href = 'dashboard-rh.html';
 }
 
 async function fazerLogin() {

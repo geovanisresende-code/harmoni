@@ -135,6 +135,7 @@ body{
     .container{
         flex-direction:column;
         text-align:center;
+        gap:40px;
     }
 
     .text-content h1{
@@ -143,6 +144,53 @@ body{
 
     .text-content p{
         margin:0 auto 30px auto;
+    }
+
+    .btn{
+        margin-left:0;
+    }
+
+    .logo-content img{
+        max-width:360px;
+    }
+}
+
+@media(max-width:600px){
+    body{
+        overflow-y:auto;
+        height:auto;
+        min-height:100vh;
+        padding:40px 0;
+    }
+
+    .container{
+        flex-direction:column;
+        text-align:center;
+        gap:30px;
+        width:92%;
+    }
+
+    .text-content h1{
+        font-size:1.75rem;
+        margin-bottom:14px;
+    }
+
+    .text-content p{
+        font-size:1rem;
+        margin:0 auto 28px auto;
+    }
+
+    .btn{
+        margin-left:0;
+        padding:14px 28px;
+        font-size:0.95rem;
+        width:100%;
+        text-align:center;
+        display:block;
+    }
+
+    .logo-content img{
+        max-width:240px;
     }
 }
 </style>

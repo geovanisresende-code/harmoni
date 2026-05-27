@@ -256,16 +256,11 @@ async function fazerLogin() {
     await HarmoniAuth.loginAPI(email, senha);
     window.location.href = 'index.html';
   } catch (err) {
-    // Fallback mock (remover quando backend estiver no ar)
-    if (err.message.includes('fetch') || err.message.includes('Failed')) {
-      const nome = email.split('@')[0];
-      const nomeFmt = nome.charAt(0).toUpperCase() + nome.slice(1);
-      HarmoniAuth.login({ name: nomeFmt, email, role: 'collaborator', token: 'mock' });
-      window.location.href = 'index.html';
-    } else {
-      alert(err.message);
-      if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
-    }
+    // Fallback mock enquanto backend não está no ar — aceita qualquer erro
+    const nome = email.split('@')[0];
+    const nomeFmt = nome.charAt(0).toUpperCase() + nome.slice(1);
+    HarmoniAuth.login({ name: nomeFmt, email, role: 'collaborator', token: 'mock' });
+    window.location.href = 'index.html';
   }
 }
 </script>

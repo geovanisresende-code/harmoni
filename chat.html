@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="assets/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Harmoni – Nova Análise</title>
 <link rel="stylesheet" href="harmoni.css">
@@ -142,7 +143,7 @@
 
 .input-box input::placeholder { color: rgba(255,255,255,0.4); }
 
-.input-btns { display: flex; gap: 8px; }
+.input-btns { display: flex; gap: 8px; align-items: center; }
 
 </style>
 </head>
@@ -173,7 +174,7 @@
   <div class="chat-box" id="chatBox">
     <div class="message bot-msg">
       <div class="bot-label">Harmoni IA</div>
-      Olá, Carlos 👋 Estou aqui para te apoiar. Como você está se sentindo hoje?
+      Olá! 👋 Estou aqui para te apoiar. Como você está se sentindo hoje?
     </div>
   </div>
 
@@ -183,10 +184,7 @@
 <div class="input-area">
   <div class="input-box">
     <input type="text" id="userInput" placeholder="Escreva como você está se sentindo..." onkeydown="if(event.key==='Enter') enviar()">
-    <div class="input-btns">
-      <button class="btn btn-secondary btn-sm" onclick="enviar()">Enviar</button>
-      <button class="btn btn-accent btn-sm" onclick="gerarRelatorio()">📋 Relatório</button>
-    </div>
+    <button class="btn btn-primary btn-sm" onclick="enviar()">Enviar</button>
   </div>
 </div>
 
@@ -196,7 +194,7 @@ const user = HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
 // Respostas simuladas da IA
 const respostas = [
-  "Obrigado por compartilhar isso, Carlos. Pode me contar um pouco mais sobre o que está causando essa sensação?",
+  "Obrigado por compartilhar isso. Pode me contar um pouco mais sobre o que está causando essa sensação?",
   "Entendo. É importante reconhecer esses sentimentos. Você tem tido tempo para descansar adequadamente?",
   "Percebo que você está passando por um momento desafiador. Como está sendo sua rotina de trabalho ultimamente?",
   "Isso faz sentido. Quando foi a última vez que você fez uma atividade que te trouxe prazer ou relaxamento?",

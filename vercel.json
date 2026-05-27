@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/", "destination": "/boasvindas.html", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" }
   ],

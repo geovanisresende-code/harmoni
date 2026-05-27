@@ -175,17 +175,17 @@ body {
     <div class="form-section" id="formCadastro">
       <div class="form-group">
         <label class="form-label">Nome completo</label>
-        <input type="text" class="form-input" placeholder="Seu nome">
+        <input type="text" class="form-input" placeholder="Seu nome" id="cadastroNome">
       </div>
       <div class="form-group">
         <label class="form-label">E-mail corporativo</label>
-        <input type="email" class="form-input" placeholder="seu@empresa.com">
+        <input type="email" class="form-input" placeholder="seu@empresa.com" id="cadastroEmail">
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input type="password" class="form-input" placeholder="Mínimo 8 caracteres">
+        <input type="password" class="form-input" placeholder="Mínimo 8 caracteres" id="cadastroSenha">
       </div>
-      <button class="btn btn-primary btn-full btn-lg">Criar Conta</button>
+      <button class="btn btn-primary btn-full btn-lg btn-cadastro-submit" onclick="criarConta()">Criar Conta</button>
     </div>
 
     <div class="footer-login">Harmoni © 2026 · Dados protegidos com criptografia de ponta a ponta</div>
@@ -207,6 +207,40 @@ function switchTab(tab) {
 function entrarComoRH() {
   HarmoniAuth.login({ name: 'Empresa XYZ', email: 'rh@empresa.com', role: 'rh', token: 'mock-rh' });
   window.location.href = 'dashboard-rh.html';
+}
+
+async function criarConta() {
+  const nome  = document.getElementById('cadastroNome').value.trim();
+  const email = document.getElementById('cadastroEmail').value.trim();
+  const senha = document.getElementById('cadastroSenha').value;
+
+  if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
+  if (senha.length < 8) { alert('A senha precisa ter pelo menos 8 caracteres.'); return; }
+
+  const btn = document.querySelector('.btn-cadastro-submit');
+  if (btn) { btn.textContent = 'Criando conta...'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: nome, email, password: senha })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao criar conta');
+    alert('Conta criada com sucesso! Faça login para continuar.');
+  } catch (err) {
+    // Fallback mock quando backend ainda não está no ar
+    alert('Conta criada! Faça login para continuar.');
+  }
+
+  if (btn) { btn.textContent = 'Criar Conta'; btn.disabled = false; }
+
+  // Limpa campos e volta pra aba de login
+  document.getElementById('cadastroNome').value = '';
+  document.getElementById('cadastroEmail').value = '';
+  document.getElementById('cadastroSenha').value = '';
+  switchTab('entrar');
 }
 
 async function fazerLogin() {

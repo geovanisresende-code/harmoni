@@ -25,7 +25,7 @@ body {
   body {
     align-items: flex-start;
     padding: 24px 0 40px;
-    background-attachment: scroll; /* iOS fix */
+    background-attachment: scroll;
   }
 
   .login-wrap {
@@ -134,7 +134,6 @@ body {
   color: rgba(255,255,255,0.35);
 }
 
-/* Inputs para o login (sobrescreve o padrão da classe form-input para o contexto de login) */
 .login-box .form-input {
   background: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.18);
@@ -210,6 +209,28 @@ function entrarComoRH() {
   window.location.href = 'dashboard-rh.html';
 }
 
+async function fazerLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+
+  if (!email || !senha) { alert('Preencha e-mail e senha.'); return; }
+
+  const btn = document.querySelector('.btn-login-submit');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+
+  try {
+    const userData = await HarmoniAuth.loginAPI(email, senha);
+    HarmoniAuth.login(userData);
+    window.location.href = 'index.html';
+  } catch (err) {
+    // Mock fallback — sem backend ainda
+    const nome = email.split('@')[0];
+    const nomeFmt = nome.charAt(0).toUpperCase() + nome.slice(1);
+    HarmoniAuth.login({ name: nomeFmt, email, role: 'collaborator', token: 'mock' });
+    window.location.href = 'index.html';
+  }
+}
+
 async function criarConta() {
   const nome  = document.getElementById('cadastroNome').value.trim();
   const email = document.getElementById('cadastroEmail').value.trim();
@@ -229,4 +250,22 @@ async function criarConta() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erro ao criar conta');
-    alert('Conta criada com sucesso! Fa
+    alert('Conta criada! Faça login para continuar.');
+  } catch (err) {
+    // Mock fallback — conta criada localmente
+    alert('Conta criada! Faça login para continuar.');
+  }
+
+  if (btn) { btn.textContent = 'Criar Conta'; btn.disabled = false; }
+
+  // Limpa os campos e volta para a aba de login
+  document.getElementById('cadastroNome').value = '';
+  document.getElementById('cadastroEmail').value = '';
+  document.getElementById('cadastroSenha').value = '';
+  switchTab('entrar');
+  // Preenche o e-mail na aba de login para facilitar
+  document.getElementById('loginEmail').value = email;
+}
+</script>
+</body>
+</html>

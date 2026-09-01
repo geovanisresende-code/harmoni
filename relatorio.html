@@ -94,14 +94,14 @@
     <button class="btn btn-accent" onclick="window.location.href='chat.html'">+ Nova Análise</button>
   </div>
 
-  <div class="report-header">
+  <div class="report-header" id="reportHeader">
     <div class="report-meta">
-      <h2>Nenhum relatório disponível</h2>
-      <p>Faça sua primeira análise emocional para gerar um relatório personalizado.</p>
+      <h2>Carregando relatório...</h2>
+      <p></p>
     </div>
     <div class="score-circle">
       <div class="score-inner">
-        <span>—</span>
+        <span id="scoreValue">—</span>
         <span>Índice Geral</span>
       </div>
     </div>
@@ -111,25 +111,25 @@
     <div class="card">
       <div class="card-title">Indicadores da Sessão</div>
       <div class="indicator-row" style="margin-bottom:18px">
-        <div class="label-row"><span>Nível de Energia</span><span style="color:rgba(255,255,255,0.4)">—</span></div>
-        <div class="progress-bar"><div class="progress-fill green" style="width:0%"></div></div>
+        <div class="label-row"><span>Nível de Energia</span><span id="lblEnergia" style="color:rgba(255,255,255,0.4)">—</span></div>
+        <div class="progress-bar"><div id="barEnergia" class="progress-fill green" style="width:0%"></div></div>
       </div>
       <div class="indicator-row" style="margin-bottom:18px">
-        <div class="label-row"><span>Estresse Percebido</span><span style="color:rgba(255,255,255,0.4)">—</span></div>
-        <div class="progress-bar"><div class="progress-fill pink" style="width:0%"></div></div>
+        <div class="label-row"><span>Estresse Percebido</span><span id="lblEstresse" style="color:rgba(255,255,255,0.4)">—</span></div>
+        <div class="progress-bar"><div id="barEstresse" class="progress-fill pink" style="width:0%"></div></div>
       </div>
       <div class="indicator-row" style="margin-bottom:18px">
-        <div class="label-row"><span>Risco de Exaustão</span><span style="color:rgba(255,255,255,0.4)">—</span></div>
-        <div class="progress-bar"><div class="progress-fill blue" style="width:0%"></div></div>
+        <div class="label-row"><span>Risco de Exaustão</span><span id="lblRisco" style="color:rgba(255,255,255,0.4)">—</span></div>
+        <div class="progress-bar"><div id="barRisco" class="progress-fill blue" style="width:0%"></div></div>
       </div>
       <div class="indicator-row">
-        <div class="label-row"><span>Engajamento</span><span style="color:rgba(255,255,255,0.4)">—</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        <div class="label-row"><span>Engajamento</span><span id="lblEngajamento" style="color:rgba(255,255,255,0.4)">—</span></div>
+        <div class="progress-bar"><div id="barEngajamento" class="progress-fill" style="width:0%"></div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Evolução — Últimas Sessões</div>
-      <div class="empty-chart">
+      <div class="card-title">Status Geral</div>
+      <div class="empty-chart" id="statusGeralBox">
         <span>📈</span>
         Disponível após a primeira análise
       </div>
@@ -137,17 +137,21 @@
   </div>
 
   <div class="section">
-    <div class="section-header"><div class="section-title">Análise da IA Harmoni</div></div>
-    <div class="analysis-block">
-      <strong>✦ Aguardando análise</strong>
-      A análise emocional será gerada automaticamente pela IA após a conclusão da sua sessão.
+    <div class="section-header"><div class="section-title">Análise da IA</div></div>
+    <div id="analiseBox">
+      <div class="analysis-block">
+        <strong>✦ Aguardando análise</strong>
+        A análise emocional será gerada automaticamente pela IA após a conclusão da sua sessão.
+      </div>
     </div>
   </div>
 
   <div class="section">
     <div class="section-header"><div class="section-title">Plano de Ação Personalizado</div></div>
-    <div class="analysis-block" style="border-left-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.45)">
-      O plano de ação será criado com base nos seus resultados após a primeira análise emocional.
+    <div id="planoBox">
+      <div class="analysis-block" style="border-left-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.45)">
+        O plano de ação será criado com base nos seus resultados após a primeira análise emocional.
+      </div>
     </div>
   </div>
 
@@ -166,6 +170,94 @@
 <script>
 HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
+
+function statusBadgeColor(status) {
+  const s = (status || '').toLowerCase();
+  if (s.includes('crít')) return '#e74c3c';
+  if (s.includes('atenç')) return '#f1c40f';
+  if (s.includes('saud')) return '#2ecc71';
+  return '#2bb0e6';
+}
+
+function renderRelatorio(report) {
+  const ind = report.indicators || {};
+  const analise = report.analysis || {};
+  const plano = report.action_plan || [];
+
+  document.querySelector('#reportHeader h2').textContent = `Relatório de ${new Date(report.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+  document.querySelector('#reportHeader p').textContent = 'Análise emocional gerada pela IA com base na sua sessão.';
+  document.getElementById('scoreValue').textContent = report.score_geral;
+  document.querySelector('.score-circle').style.background = `conic-gradient(#ff7a18 0% ${report.score_geral}%, rgba(255,255,255,0.15) ${report.score_geral}% 100%)`;
+
+  const bars = [
+    ['lblEnergia', 'barEnergia', ind.energia],
+    ['lblEstresse', 'barEstresse', ind.estresse],
+    ['lblRisco', 'barRisco', ind.riscoExaustao],
+    ['lblEngajamento', 'barEngajamento', ind.engajamento]
+  ];
+  bars.forEach(([lblId, barId, val]) => {
+    if (val === undefined || val === null) return;
+    document.getElementById(lblId).textContent = val;
+    document.getElementById(lblId).style.color = '#fff';
+    document.getElementById(barId).style.width = `${val}%`;
+  });
+
+  const statusBox = document.getElementById('statusGeralBox');
+  statusBox.classList.remove('empty-chart');
+  statusBox.innerHTML = `<div style="text-align:center;padding:20px 0">
+    <div style="font-size:22px;font-weight:700;color:${statusBadgeColor(analise.statusGeral || report.statusGeral)};margin-bottom:8px">${analise.statusGeral || report.statusGeral || '—'}</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.6)">Baseado nos indicadores da sessão</div>
+  </div>`;
+
+  const analiseBox = document.getElementById('analiseBox');
+  const partes = [
+    ['Contexto Emocional', analise.contextoEmocional],
+    ['Pontos de Atenção', analise.pontosAtencao],
+    ['Evolução', analise.evolucao]
+  ].filter(([, texto]) => texto);
+
+  if (partes.length > 0) {
+    analiseBox.innerHTML = partes.map(([titulo, texto]) => `
+      <div class="analysis-block">
+        <strong>✦ ${titulo}</strong>
+        ${texto}
+      </div>
+    `).join('');
+  }
+
+  const planoBox = document.getElementById('planoBox');
+  if (plano.length > 0) {
+    planoBox.innerHTML = plano.map((item) => `
+      <div class="analysis-block">
+        <strong>✦ ${item.titulo || ''}</strong>
+        ${item.descricao || ''}
+      </div>
+    `).join('');
+  }
+}
+
+async function carregarRelatorio() {
+  try {
+    let reportId = new URLSearchParams(location.search).get('id');
+
+    if (!reportId) {
+      const listRes = await HarmoniAuth.fetch('/reports');
+      const list = await listRes.json();
+      if (!listRes.ok || list.length === 0) return; // mantém o estado vazio padrão
+      reportId = list[0].id;
+    }
+
+    const res = await HarmoniAuth.fetch(`/reports/${reportId}`);
+    const report = await res.json();
+    if (!res.ok) throw new Error(report.error || 'Erro ao carregar relatório.');
+
+    renderRelatorio(report);
+  } catch (err) {
+    console.error('Erro ao carregar relatório:', err);
+  }
+}
+
+carregarRelatorio();
 </script>
 </body>
 </html>

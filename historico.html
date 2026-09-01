@@ -19,6 +19,23 @@
 .empty-state h3    { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.6); }
 .empty-state p     { font-size: 14px; margin-bottom: 24px; }
 
+.report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.report-row:last-child { border-bottom: none; }
+.report-row:hover { background: rgba(255,255,255,0.05); }
+
+.report-row .rr-date  { font-size: 14px; color: #fff; font-weight: 500; }
+.report-row .rr-score { font-size: 13px; color: rgba(255,255,255,0.6); }
+
 </style>
 </head>
 <body>
@@ -39,12 +56,12 @@
   <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px">
     <div>
       <div class="page-title" style="margin-bottom:4px">Seus Relatórios</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.6)">Nenhuma sessão realizada ainda</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)" id="subtitulo">Carregando...</div>
     </div>
     <button class="btn btn-primary" onclick="location.href='chat.html'">+ Nova Análise</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="cardRelatorios" style="padding:0">
     <div class="empty-state">
       <div class="icon">📄</div>
       <h3>Nenhum relatório ainda</h3>
@@ -57,6 +74,41 @@
 </div>
 
 <script src="auth.js"></script>
-<script>HarmoniAuth.requireAuth(); HarmoniAuth.fillUserName();</script>
+<script>
+HarmoniAuth.requireAuth();
+HarmoniAuth.fillUserName();
+
+async function carregarRelatorios() {
+  const subtitulo = document.getElementById('subtitulo');
+  const card = document.getElementById('cardRelatorios');
+  try {
+    const res  = await HarmoniAuth.fetch('/reports');
+    const reports = await res.json();
+    if (!res.ok) throw new Error(reports.error || 'Erro ao carregar relatórios.');
+
+    if (reports.length === 0) {
+      subtitulo.textContent = 'Nenhuma sessão realizada ainda';
+      return;
+    }
+
+    subtitulo.textContent = `${reports.length} relatório(s) gerado(s)`;
+    card.style.padding = '0';
+    card.innerHTML = reports.map((r) => `
+      <div class="report-row" onclick="location.href='relatorio.html?id=${r.id}'">
+        <div>
+          <div class="rr-date">${new Date(r.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+          <div class="rr-score">Índice geral: ${r.score_geral}</div>
+        </div>
+        <span class="btn btn-ghost btn-sm">Ver relatório →</span>
+      </div>
+    `).join('');
+  } catch (err) {
+    subtitulo.textContent = 'Não foi possível carregar seus relatórios.';
+    console.error(err);
+  }
+}
+
+carregarRelatorios();
+</script>
 </body>
 </html>

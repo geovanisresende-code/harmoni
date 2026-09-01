@@ -29,10 +29,13 @@
 .ai-avatar {
   width: 38px; height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff6f91, #ff9472);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ai-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
 }
 
 .ai-status { flex: 1; }
@@ -163,20 +166,15 @@
 <div class="chat-container">
 
   <div class="chat-header">
-    <div class="ai-avatar">🤖</div>
+    <div class="ai-avatar"><img src="assets/mauricio.png" alt="Maurício"></div>
     <div class="ai-status">
-      <div class="ai-name">Harmoni IA</div>
+      <div class="ai-name">Maurício</div>
       <div class="ai-online">● Online · Análise emocional ativa</div>
     </div>
     <button class="btn btn-sm btn-ghost" onclick="encerrarSessao()">Encerrar sessão</button>
   </div>
 
-  <div class="chat-box" id="chatBox">
-    <div class="message bot-msg">
-      <div class="bot-label">Harmoni IA</div>
-      Olá! 👋 Estou aqui para te apoiar. Como você está se sentindo hoje?
-    </div>
-  </div>
+  <div class="chat-box" id="chatBox"></div>
 
 </div>
 
@@ -195,59 +193,104 @@
 <script>
 const user = HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
-// Respostas simuladas da IA
-const respostas = [
-  "Obrigado por compartilhar isso. Pode me contar um pouco mais sobre o que está causando essa sensação?",
-  "Entendo. É importante reconhecer esses sentimentos. Você tem tido tempo para descansar adequadamente?",
-  "Percebo que você está passando por um momento desafiador. Como está sendo sua rotina de trabalho ultimamente?",
-  "Isso faz sentido. Quando foi a última vez que você fez uma atividade que te trouxe prazer ou relaxamento?",
-  "Obrigado por essa transparência. Com base no que você me contou, vou registrar esses pontos no seu relatório.",
-  "Você está indo muito bem em verbalizar seus sentimentos — isso por si só já é um passo enorme. Tem mais algo que queira compartilhar?"
-];
 
-let respostaIdx = 0;
+let sessionId = null;
+let enviando  = false;
 
-function enviar() {
-  const input = document.getElementById('userInput');
+function addMessage(role, text) {
   const chatBox = document.getElementById('chatBox');
-  const texto = input.value.trim();
-
-  if (!texto) return;
-
-  // Mensagem do usuário
-  const userMsg = document.createElement('div');
-  userMsg.className = 'message user-msg';
-  userMsg.innerText = texto;
-  chatBox.appendChild(userMsg);
+  const msg = document.createElement('div');
+  msg.className = `message ${role === 'user' ? 'user-msg' : 'bot-msg'}`;
+  if (role === 'bot') {
+    const label = document.createElement('div');
+    label.className = 'bot-label';
+    label.innerText = 'Maurício';
+    msg.appendChild(label);
+  }
+  const span = document.createElement('span');
+  span.innerText = text;
+  msg.appendChild(span);
+  chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
-  input.value = '';
+}
 
-  // Typing indicator
+function showTyping() {
+  const chatBox = document.getElementById('chatBox');
   const typing = document.createElement('div');
   typing.className = 'typing';
+  typing.id = 'typingIndicator';
   typing.innerHTML = '<span></span><span></span><span></span>';
   chatBox.appendChild(typing);
   chatBox.scrollTop = chatBox.scrollHeight;
-
-  setTimeout(() => {
-    chatBox.removeChild(typing);
-    const botMsg = document.createElement('div');
-    botMsg.className = 'message bot-msg';
-    botMsg.innerHTML = `<div class="bot-label">Harmoni IA</div>${respostas[respostaIdx % respostas.length]}`;
-    chatBox.appendChild(botMsg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    respostaIdx++;
-  }, 1200);
 }
 
-function gerarRelatorio() {
+function hideTyping() {
+  const typing = document.getElementById('typingIndicator');
+  if (typing) typing.remove();
+}
+
+async function iniciarSessao() {
+  showTyping();
+  try {
+    const res  = await HarmoniAuth.fetch('/sessions', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao iniciar sessão.');
+    sessionId = data.sessionId;
+    hideTyping();
+    addMessage('bot', data.message);
+  } catch (err) {
+    hideTyping();
+    addMessage('bot', `Não consegui iniciar a sessão agora. Tente recarregar a página. (${err.message})`);
+  }
+}
+
+async function enviar() {
+  if (enviando || !sessionId) return;
+
+  const input = document.getElementById('userInput');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  addMessage('user', texto);
+  input.value = '';
+  enviando = true;
+  showTyping();
+
+  try {
+    const res  = await HarmoniAuth.fetch(`/sessions/${sessionId}/message`, {
+      method: 'POST',
+      body: JSON.stringify({ message: texto })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao enviar mensagem.');
+    hideTyping();
+    addMessage('bot', data.reply);
+  } catch (err) {
+    hideTyping();
+    addMessage('bot', `Houve um erro ao falar com a IA. Tente novamente. (${err.message})`);
+  } finally {
+    enviando = false;
+  }
+}
+
+async function gerarRelatorio() {
+  if (!sessionId) return;
+
   const chatBox = document.getElementById('chatBox');
   const notif = document.createElement('div');
   notif.style.cssText = 'text-align:center;color:rgba(255,255,255,0.6);font-size:13px;padding:8px';
   notif.innerText = '📊 Gerando relatório com base na sessão...';
   chatBox.appendChild(notif);
   chatBox.scrollTop = chatBox.scrollHeight;
-  setTimeout(() => window.location.href = 'relatorio.html', 1500);
+
+  try {
+    const res  = await HarmoniAuth.fetch(`/sessions/${sessionId}/finish`, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao gerar relatório.');
+    window.location.href = `relatorio.html?id=${data.reportId}`;
+  } catch (err) {
+    notif.innerText = `Não foi possível gerar o relatório agora. (${err.message})`;
+  }
 }
 
 function encerrarSessao() {
@@ -255,6 +298,8 @@ function encerrarSessao() {
     window.location.href = 'index.html';
   }
 }
+
+iniciarSessao();
 </script>
 </body>
 </html>

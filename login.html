@@ -229,4 +229,31 @@ async function criarConta() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erro ao criar conta');
-    alert('Conta criada com sucesso! Fa
+
+    HarmoniAuth.login({ ...data.user, token: data.token });
+    window.location.href = 'index.html';
+  } catch (err) {
+    alert(err.message || 'Erro ao criar conta.');
+    if (btn) { btn.textContent = 'Criar Conta'; btn.disabled = false; }
+  }
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const senha = document.getElementById('loginSenha').value;
+  if (!email || !senha) { alert('Preencha e-mail e senha.'); return; }
+
+  const btn = document.querySelector('.btn-login-submit');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+
+  try {
+    await HarmoniAuth.loginAPI(email, senha);
+    window.location.href = 'index.html';
+  } catch (err) {
+    alert(err.message || 'Erro ao entrar.');
+    if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
+  }
+}
+</script>
+</body>
+</html>

@@ -186,6 +186,41 @@
 <script>
 HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
+
+function fmt(n) {
+  return (n === null || n === undefined) ? '—' : Math.round(n);
+}
+
+async function carregarIndicadores() {
+  try {
+    const res  = await HarmoniAuth.fetch('/indicators');
+    const data = await res.json();
+    if (!res.ok || !data.latest) return;
+
+    const agg = data.aggregated;
+    const cards = document.querySelectorAll('.grid-4 .card-value');
+    const labels = document.querySelectorAll('.grid-4 .card-label');
+    const values = [agg.indice_geral, agg.energia, agg.estresse, agg.risco_exaustao];
+    cards.forEach((el, i) => {
+      el.textContent = fmt(values[i]);
+      el.style.color = '#fff';
+    });
+    labels.forEach((el) => { el.textContent = `Média de ${agg.total_sessoes} sessão(ões)`; });
+
+    document.querySelector('.welcome-text p').textContent =
+      `Seu índice geral atual é ${fmt(data.latest.score_geral)}. Continue acompanhando sua evolução.`;
+
+    document.querySelector('.streak-badge .num').textContent = agg.total_sessoes;
+    document.querySelector('.streak-badge .lbl').textContent = 'sessões realizadas';
+
+    const chart = document.querySelector('.empty-chart');
+    chart.innerHTML = `<span>📈</span>Última sessão em ${new Date(data.latest.created_at).toLocaleDateString('pt-BR')} · índice ${fmt(data.latest.score_geral)}`;
+  } catch (err) {
+    console.error('Erro ao carregar indicadores:', err);
+  }
+}
+
+carregarIndicadores();
 </script>
 </body>
 </html>

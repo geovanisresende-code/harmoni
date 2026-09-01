@@ -7,6 +7,7 @@
 <title>Harmoni – Indicadores</title>
 <link rel="stylesheet" href="harmoni.css">
 <script src="menu.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 
 .indicator-card {
@@ -54,46 +55,46 @@
   <div class="page-title">Seus Indicadores Emocionais</div>
 
   <!-- Cards de KPI -->
-  <div class="grid-4" style="margin-bottom:30px">
+  <div class="grid-4" style="margin-bottom:30px" id="kpiGrid">
 
     <div class="card indicator-card">
       <div class="card-title">Energia</div>
-      <div class="indicator-value">—</div>
-      <div class="card-label">Nenhuma análise ainda</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill green" style="width:0%"></div></div>
+      <div class="indicator-value" id="valEnergia">—</div>
+      <div class="card-label" id="lblEnergia">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div id="barEnergia" class="progress-fill green" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Estresse</div>
-      <div class="indicator-value">—</div>
-      <div class="card-label">Nenhuma análise ainda</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill pink" style="width:0%"></div></div>
+      <div class="indicator-value" id="valEstresse">—</div>
+      <div class="card-label" id="lblEstresse">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div id="barEstresse" class="progress-fill pink" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Risco de Exaustão</div>
-      <div class="indicator-value">—</div>
-      <div class="card-label">Nenhuma análise ainda</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill blue" style="width:0%"></div></div>
+      <div class="indicator-value" id="valRisco">—</div>
+      <div class="card-label" id="lblRisco">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div id="barRisco" class="progress-fill blue" style="width:0%"></div></div>
     </div>
 
     <div class="card indicator-card">
       <div class="card-title">Índice Geral</div>
-      <div class="indicator-value">—</div>
-      <div class="card-label">Nenhuma análise ainda</div>
-      <div class="progress-bar" style="margin-top:14px"><div class="progress-fill" style="width:0%"></div></div>
+      <div class="indicator-value" id="valGeral">—</div>
+      <div class="card-label" id="lblGeral">Nenhuma análise ainda</div>
+      <div class="progress-bar" style="margin-top:14px"><div id="barGeral" class="progress-fill" style="width:0%"></div></div>
     </div>
 
   </div>
 
-  <!-- Gráficos vazios -->
+  <!-- Gráficos -->
   <div class="grid-2" style="margin-bottom:30px">
 
     <div class="card">
       <div class="section-header">
-        <div class="section-title">Evolução — 30 dias</div>
+        <div class="section-title">Evolução — Últimas Sessões</div>
       </div>
-      <div class="empty-chart">
+      <div class="empty-chart" id="evolucaoBox">
         <span>📈</span>
         Disponível após a primeira análise
       </div>
@@ -103,7 +104,7 @@
       <div class="section-header">
         <div class="section-title">Radar Emocional</div>
       </div>
-      <div class="empty-chart">
+      <div class="empty-chart" id="radarBox">
         <span>🎯</span>
         Disponível após a primeira análise
       </div>
@@ -117,7 +118,7 @@
     </div>
     <div class="empty-chart">
       <span>📊</span>
-      Disponível após a primeira análise
+      Em breve
     </div>
   </div>
 
@@ -128,6 +129,93 @@
 <script>
 HarmoniAuth.requireAuth();
 HarmoniAuth.fillUserName();
+
+function fmt(n) { return (n === null || n === undefined) ? '—' : Math.round(n); }
+
+function preencherKpi(id, val) {
+  if (val === null || val === undefined) return;
+  document.getElementById(`val${id}`).textContent = fmt(val);
+  document.getElementById(`val${id}`).style.color = '#fff';
+  document.getElementById(`lbl${id}`).textContent = 'Média geral';
+  document.getElementById(`bar${id}`).style.width = `${val}%`;
+}
+
+async function carregarIndicadores() {
+  try {
+    const res  = await HarmoniAuth.fetch('/indicators');
+    const data = await res.json();
+    if (!res.ok || !data.latest) return;
+
+    const agg = data.aggregated;
+    preencherKpi('Energia', agg.energia);
+    preencherKpi('Estresse', agg.estresse);
+    preencherKpi('Risco', agg.risco_exaustao);
+    preencherKpi('Geral', agg.indice_geral);
+
+    const radarBox = document.getElementById('radarBox');
+    radarBox.classList.remove('empty-chart');
+    radarBox.innerHTML = '<canvas id="radarChart" height="220"></canvas>';
+    const ind = data.latest.indicators || {};
+    new Chart(document.getElementById('radarChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Energia', 'Estresse', 'Risco Exaustão', 'Engajamento'],
+        datasets: [{
+          label: 'Última sessão',
+          data: [ind.energia, ind.estresse, ind.riscoExaustao, ind.engajamento],
+          backgroundColor: 'rgba(255,111,145,0.25)',
+          borderColor: '#ff6f91',
+          pointBackgroundColor: '#ff6f91'
+        }]
+      },
+      options: {
+        scales: {
+          r: {
+            min: 0, max: 100,
+            grid: { color: 'rgba(255,255,255,0.15)' },
+            angleLines: { color: 'rgba(255,255,255,0.15)' },
+            pointLabels: { color: 'rgba(255,255,255,0.8)' },
+            ticks: { display: false }
+          }
+        },
+        plugins: { legend: { labels: { color: 'rgba(255,255,255,0.8)' } } }
+      }
+    });
+
+    const histRes  = await HarmoniAuth.fetch('/indicators/history?limit=10');
+    const history  = await histRes.json();
+    if (histRes.ok && history.length > 0) {
+      const evolBox = document.getElementById('evolucaoBox');
+      evolBox.classList.remove('empty-chart');
+      evolBox.innerHTML = '<canvas id="evolChart" height="220"></canvas>';
+      new Chart(document.getElementById('evolChart'), {
+        type: 'line',
+        data: {
+          labels: history.map((h) => new Date(h.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })),
+          datasets: [{
+            label: 'Índice Geral',
+            data: history.map((h) => h.score_geral),
+            borderColor: '#ff7a18',
+            backgroundColor: 'rgba(255,122,24,0.15)',
+            tension: 0.35,
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'rgba(255,255,255,0.6)' } },
+            x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.6)' } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Erro ao carregar indicadores:', err);
+  }
+}
+
+carregarIndicadores();
 </script>
 </body>
 </html>

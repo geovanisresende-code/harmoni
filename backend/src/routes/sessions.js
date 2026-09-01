@@ -18,11 +18,17 @@ router.post('/', async (req, res) => {
     [sessionId, userId]
   );
 
-  // Busca memória do usuário para contextualizar a IA
-  const memory = await ai.getUserMemory(userId);
+  // Primeira mensagem — abre a conversa com o agente
+  const { reply, conversationId } = await ai.chat(sessionId, 'Olá', null);
 
-  // Primeira mensagem da IA
-  const { reply } = await ai.chat(userId, sessionId, '__INIT__', memory);
+  await db.query(
+    `UPDATE sessions SET abacus_conversation_id = $1 WHERE id = $2`,
+    [conversationId, sessionId]
+  );
+  await db.query(
+    `INSERT INTO messages (session_id, role, content) VALUES ($1, 'assistant', $2)`,
+    [sessionId, reply]
+  );
 
   res.status(201).json({
     sessionId,
@@ -54,14 +60,19 @@ router.post('/:id/message', async (req, res) => {
     [sessionId, message]
   );
 
-  const memory = await ai.getUserMemory(userId);
-  const { reply, isComplete } = await ai.chat(userId, sessionId, message, memory);
+  const { reply, conversationId } = await ai.chat(sessionId, message, session.rows[0].abacus_conversation_id);
 
   // Salva resposta da IA
   await db.query(
     `INSERT INTO messages (session_id, role, content) VALUES ($1, 'assistant', $2)`,
     [sessionId, reply]
   );
+  if (conversationId && conversationId !== session.rows[0].abacus_conversation_id) {
+    await db.query(`UPDATE sessions SET abacus_conversation_id = $1 WHERE id = $2`, [conversationId, sessionId]);
+  }
+
+  const countResult = await db.query(`SELECT COUNT(*) FROM messages WHERE session_id = $1`, [sessionId]);
+  const isComplete = Number(countResult.rows[0].count) >= 16;
 
   res.json({ reply, isComplete });
 });
@@ -89,7 +100,7 @@ router.post('/:id/finish', async (req, res) => {
       sessionId,
       analysis.indicadores.indiceGeral,
       JSON.stringify(analysis.indicadores),
-      JSON.stringify(analysis.analise),
+      JSON.stringify({ ...analysis.analise, statusGeral: analysis.statusGeral, proximaSessaoEmDias: analysis.proximaSessaoEmDias }),
       JSON.stringify(analysis.planoAcao)
     ]
   );

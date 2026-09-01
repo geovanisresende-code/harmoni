@@ -4,6 +4,7 @@ const cors       = require('cors');
 const helmet     = require('helmet');
 const morgan     = require('morgan');
 
+const { migrate }        = require('../backend/src/utils/migrate');
 const authRoutes         = require('../backend/src/routes/auth');
 const sessionRoutes      = require('../backend/src/routes/sessions');
 const reportRoutes       = require('../backend/src/routes/reports');
@@ -25,6 +26,14 @@ app.use(cors({
 // Webhook Stripe precisa de raw body
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+
+// Garante que as tabelas existem antes de qualquer rota tocar o banco
+// (idempotente — CREATE TABLE IF NOT EXISTS — roda uma vez por cold start)
+let migrated = null;
+app.use((req, res, next) => {
+  if (!migrated) migrated = migrate().catch((err) => { migrated = null; throw err; });
+  migrated.then(() => next()).catch(next);
+});
 
 // Rotas
 app.use('/api/auth',          authRoutes);

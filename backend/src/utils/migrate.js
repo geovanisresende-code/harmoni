@@ -37,12 +37,15 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Sessões de análise emocional
 CREATE TABLE IF NOT EXISTS sessions (
-  id              UUID PRIMARY KEY,
-  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  status          VARCHAR(20) DEFAULT 'active', -- active | completed | abandoned
-  started_at      TIMESTAMPTZ DEFAULT NOW(),
-  finished_at     TIMESTAMPTZ
+  id                      UUID PRIMARY KEY,
+  user_id                 UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status                  VARCHAR(20) DEFAULT 'active', -- active | completed | abandoned
+  abacus_conversation_id  VARCHAR(255),
+  started_at              TIMESTAMPTZ DEFAULT NOW(),
+  finished_at             TIMESTAMPTZ
 );
+
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS abacus_conversation_id VARCHAR(255);
 
 -- Mensagens da sessão
 CREATE TABLE IF NOT EXISTS messages (
@@ -89,15 +92,19 @@ CREATE INDEX IF NOT EXISTS idx_sessions_user      ON sessions(user_id);
 `;
 
 async function migrate() {
-  try {
-    console.log('🔄 Rodando migrações...');
-    await db.query(migrations);
-    console.log('✅ Migrações concluídas com sucesso!');
-    process.exit(0);
-  } catch (err) {
-    console.error('❌ Erro na migração:', err.message);
-    process.exit(1);
-  }
+  console.log('🔄 Rodando migrações...');
+  await db.query(migrations);
+  console.log('✅ Migrações concluídas com sucesso!');
 }
 
-migrate();
+// Permite `node src/utils/migrate.js` continuar funcionando como script standalone
+if (require.main === module) {
+  migrate()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('❌ Erro na migração:', err.message);
+      process.exit(1);
+    });
+}
+
+module.exports = { migrate };
